@@ -4,7 +4,7 @@ import { existsSync, writeFileSync, mkdirSync } from "fs"
 //import { join } from "path"
 
 import { timeIt } from "./utils"
-import { Fetchable, GitLabContentPluginOptions } from "./types"
+import {Fetchable, GitLabContentPluginOptions} from "./types"
 import fs from "fs";
 
 // noinspection JSUnusedGlobalSymbols
@@ -19,7 +19,8 @@ export default async function pluginGitLabContent(
         locations,
         performCleanup = true,
         requestConfig = {},
-        rewriteImages  = true
+        rewriteImages  = true,
+        replaceTextWithAnother
     } = options
 
     console.log("Site Directory : ", context.siteDir);
@@ -104,6 +105,7 @@ export default async function pluginGitLabContent(
         Promise.all(promises);
     }
 
+
     function fetchContent(projects: any, location: string) {
         console.log("Entering fetchContent")
 
@@ -115,14 +117,19 @@ export default async function pluginGitLabContent(
                     `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`,
                     requestConfig
                 ).then(response => {
-                    console.log(`Writing to = ${context.siteDir}/${outDir}/${location}/${project.name}-README.md`);
+                    console.log(`Writing to = ${context.siteDir}/${outDir}/${location}/${project.name}.md`);
                     console.log("Received file = ", response.data);
                     if (rewriteImages) {
                         let rewrittenData: string = rewriteImagesURLs(response.data, project);
-                        writeFileSync(`${context.siteDir}/${outDir}/${location}/${project.name}-README.md`, rewrittenData);
+
+                        if (replaceTextWithAnother) {
+                            rewrittenData = rewrittenData.replaceAll(replaceTextWithAnother.replace, replaceTextWithAnother.replaceWith);
+                        }
+
+                        writeFileSync(`${context.siteDir}/${outDir}/${location}/${project.name}.md`, rewrittenData);
                     }
                     else {
-                        writeFileSync(`${context.siteDir}/${outDir}/${location}/${project.name}-README.md`, response.data);
+                        writeFileSync(`${context.siteDir}/${outDir}/${location}/${project.name}.md`, response.data);
                     }
                 }).catch(
                     reason => {

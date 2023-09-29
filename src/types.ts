@@ -55,6 +55,10 @@ export interface GitLabContentPluginOptions {
     ): { filename?: string; content?: string } | undefined
 
     rewriteImages: boolean
+
+    replaceTextWithAnother?: Replacement
+
+
 }
 
 // noinspection SpellCheckingInspection
@@ -63,4 +67,9 @@ export interface GitLabContentPluginOptions {
  */
 export interface Fetchable {
     location: string
+}
+
+export type Replacement = {
+    replace: string
+    replaceWith: string
 }
