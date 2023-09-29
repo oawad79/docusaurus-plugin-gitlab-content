@@ -75,16 +75,17 @@ export default async function pluginGitLabContent(
         let promises = [];
 
         for (let { location } of c) {
-            console.log("Looping ", location)
-            console.log(`${sourceBaseUrl}/api/v4/search?scope=projects&search=${location}`);
+            //console.log("Looping ", location)
+            //console.log(`${sourceBaseUrl}/api/v4/search?scope=projects&search=${location}`);
 
             promises.push(
                 axios.get(
-                    `${sourceBaseUrl}/api/v4/search?scope=projects&search=${location}`,
+                    //`${sourceBaseUrl}/api/v4/search?scope=projects&search=${location}`,
+                    `${sourceBaseUrl}/api/v4/groups/${location}/projects`,
                     requestConfig
                 ).then(response => {
                     if (!existsSync(location)) {
-                        console.log(`mkDirSync = ${context.siteDir}/${outDir}/${location}`)
+                        //console.log(`mkDirSync = ${context.siteDir}/${outDir}/${location}`)
                         mkdirSync(`${context.siteDir}/${outDir}/${location}`, { recursive: true })
                     }
 
@@ -103,13 +104,13 @@ export default async function pluginGitLabContent(
         for (const project of projects) {
             console.log("Looping projects ", project)
             if (project.path_with_namespace.startsWith(location)) {
-                console.log(`URL to download = ${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`);
+                //console.log(`URL to download = ${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`);
                 axios.get(
                     `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`,
                     requestConfig
                 ).then(response => {
-                    console.log(`Writing to = ${context.siteDir}/${outDir}/${location}/${project.name}.md`);
-                    console.log("Received file = ", response.data);
+                    //console.log(`Writing to = ${context.siteDir}/${outDir}/${location}/${project.name}.md`);
+                    //console.log("Received file = ", response.data);
                     if (rewriteImages) {
                         let rewrittenData: string = rewriteImagesURLs(response.data, project);
 
@@ -159,8 +160,8 @@ export default async function pluginGitLabContent(
         const c = await findRemoteItems()
 
         for (const { location } of c) {
-            console.log(`Now Deleting ${context.siteDir}/docs/gitlab/${location}`);
-            deleteAllFilesInDir(`${context.siteDir}/docs/gitlab/${location}`, '.md');
+            console.log(`Now Deleting ${context.siteDir}/docs/${outDir}/${location}`);
+            deleteAllFilesInDir(`${context.siteDir}/docs/${outDir}/${location}`, '.md');
         }
     }
 
