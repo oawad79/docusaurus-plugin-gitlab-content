@@ -159,8 +159,8 @@ export default async function pluginGitLabContent(
         const c = await findRemoteItems()
 
         for (const { location } of c) {
-            console.log(`Now Deleting ${context.siteDir}/docs/${location}`);
-            deleteAllFilesInDir(`${context.siteDir}/docs/${location}`, '.md');
+            console.log(`Now Deleting ${context.siteDir}/docs/gitlab/${location}`);
+            deleteAllFilesInDir(`${context.siteDir}/docs/gitlab/${location}`, '.md');
         }
     }
 
