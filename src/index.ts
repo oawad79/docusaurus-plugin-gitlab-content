@@ -81,7 +81,7 @@ export default async function pluginGitLabContent(
             promises.push(
                 axios.get(
                     //`${sourceBaseUrl}/api/v4/search?scope=projects&search=${location}`,
-                    `${sourceBaseUrl}/api/v4/groups/${location}/projects?per_page=100`,
+                    `${sourceBaseUrl}/api/v4/groups/${location}/projects?per_page=100&include_subgroups=true`,
                     requestConfig
                 ).then(response => {
                     if (!existsSync(location)) {
