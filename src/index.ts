@@ -60,6 +60,7 @@ export default async function pluginGitLabContent(
                 : ((await locations) as string[])
 
         for (const location of resolvedLocations) {
+            console.log('Deleting location = ', location);
             a.push({ location })
         }
 
@@ -68,7 +69,7 @@ export default async function pluginGitLabContent(
 
     async function fetchGitLabContent() {
         console.log("Entering fetchGitLabContent")
-        
+
         const c = await findRemoteItems();
 
         let promises = [];
@@ -158,6 +159,7 @@ export default async function pluginGitLabContent(
         const c = await findRemoteItems()
 
         for (const { location } of c) {
+            console.log(`Now Deleting ${context.siteDir}/docs/${location}`);
             deleteAllFilesInDir(`${context.siteDir}/docs/${location}`, '.md');
         }
     }
