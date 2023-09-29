@@ -136,7 +136,7 @@ export default async function pluginGitLabContent(
             rex = /\[([^\[]+)\]\((.*\.(jpg|png|gif|jpeg|JPG|PNG|GIF|JPEG))\)/gm;
 
         while ( m = rex.exec( fileContent ) ) {
-            let rewrittenURL = `${sourceBaseUrl}/${project.path_with_namespace}/-/raw/master/${m[2]}`
+            let rewrittenURL = `${sourceBaseUrl}/${project.path_with_namespace}/-/raw/${project.default_branch}/${m[2]}`
             fileContent = fileContent.replaceAll(m[2] as string, rewrittenURL);
         }
 
