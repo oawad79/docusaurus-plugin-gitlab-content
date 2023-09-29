@@ -103,8 +103,7 @@ export default async function pluginGitLabContent(
 
         for (const project of projects) {
             console.log("Looping projects ", project)
-            if (project.path_with_namespace.startsWith(location)) {
-                //console.log(`URL to download = ${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`);
+            //if (project.path_with_namespace.startsWith(location)) {
                 axios.get(
                     `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`,
                     requestConfig
@@ -128,7 +127,7 @@ export default async function pluginGitLabContent(
                         console.log("Error: ", reason)
                     }
                 )
-            }
+            //}
         }
     }
 
