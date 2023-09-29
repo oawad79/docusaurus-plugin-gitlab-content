@@ -117,10 +117,10 @@ export default async function pluginGitLabContent(
                             rewrittenData = rewrittenData.replaceAll(replaceTextWithAnother.replace, replaceTextWithAnother.replaceWith);
                         }
 
-                        writeFileSync(`${context.siteDir}/${outDir}/${location}/${project.name}.md`, rewrittenData);
+                        writeFileSync(`${context.siteDir}/${outDir}/${location}/${project.name.strip()}.md`, rewrittenData);
                     }
                     else {
-                        writeFileSync(`${context.siteDir}/${outDir}/${location}/${project.name}.md`, response.data);
+                        writeFileSync(`${context.siteDir}/${outDir}/${location}/${project.name.strip()}.md`, response.data);
                     }
                 }).catch(
                     reason => {
