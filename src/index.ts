@@ -19,6 +19,7 @@ export default async function pluginGitLabContent(
         locations,
         performCleanup = true,
         requestConfig = {},
+        rewriteImages  = true
     } = options
 
     console.log("Site Directory : ", context.siteDir);
@@ -116,7 +117,13 @@ export default async function pluginGitLabContent(
                 ).then(response => {
                     console.log(`Writing to = ${context.siteDir}/${outDir}/${location}/${project.name}-README.md`);
                     console.log("Received file = ", response.data);
-                    writeFileSync(`${context.siteDir}/${outDir}/${location}/${project.name}-README.md`, response.data);
+                    if (rewriteImages) {
+                        let rewrittenData: string = rewriteImagesURLs(response.data, location, project);
+                        writeFileSync(`${context.siteDir}/${outDir}/${location}/${project.name}-README.md`, rewrittenData);
+                    }
+                    else {
+                        writeFileSync(`${context.siteDir}/${outDir}/${location}/${project.name}-README.md`, response.data);
+                    }
                 }).catch(
                     reason => {
                         console.log("Error: ", reason)
@@ -124,6 +131,18 @@ export default async function pluginGitLabContent(
                 )
             }
         }
+    }
+
+    function rewriteImagesURLs(fileContent: string, location: string, project: any) : string {
+        let m : RegExpExecArray | null,
+            rex = /\[([^\[]+)\]\((.*\.(jpg|png|gif|jpeg|JPG|PNG|GIF|JPEG))\)/gm;
+
+        while ( m = rex.exec( fileContent ) ) {
+            let rewrittenURL = `${sourceBaseUrl}/${location}/${project.path_with_namespace}/-/raw/master/${m[2]}`
+            fileContent = fileContent.replaceAll(m[2] as string, rewrittenURL);
+        }
+
+        return fileContent;
     }
 
     // async function fetchContent_old(): Promise<void> {

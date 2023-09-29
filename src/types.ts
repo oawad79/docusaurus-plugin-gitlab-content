@@ -53,6 +53,8 @@ export interface GitLabContentPluginOptions {
         filename: string,
         content: string
     ): { filename?: string; content?: string } | undefined
+
+    rewriteImages: boolean
 }
 
 // noinspection SpellCheckingInspection
