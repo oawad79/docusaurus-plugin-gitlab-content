@@ -1,11 +1,11 @@
 import type { LoadContext, Plugin } from "@docusaurus/types"
 import axios from "axios"
 import { existsSync, writeFileSync, mkdirSync } from "fs"
-//import { join } from "path"
 
 import { timeIt } from "./utils"
 import {Fetchable, GitLabContentPluginOptions} from "./types"
 import fs from "fs";
+import path from "path";
 
 // noinspection JSUnusedGlobalSymbols
 export default async function pluginGitLabContent(
@@ -66,19 +66,9 @@ export default async function pluginGitLabContent(
         return a
     }
 
-    // async function getTargetDirectory(): Promise<string> {
-    //     const returnValue = join(context.siteDir, outDir)
-    //
-    //     if (!existsSync(returnValue)) {
-    //         mkdirSync(returnValue, { recursive: true })
-    //     }
-    //
-    //     return returnValue
-    // }
-
     async function fetchGitLabContent() {
         console.log("Entering fetchGitLabContent")
-        //cleanContent();
+        
         const c = await findRemoteItems();
 
         let promises = [];
@@ -152,69 +142,26 @@ export default async function pluginGitLabContent(
         return fileContent;
     }
 
-    // async function fetchContent_old(): Promise<void> {
-    //     const c = await findRemoteItems()
-    //
-    //     for (const { id } of c) {
-    //         //#region Run modifyContent (and fetch the data)
-    //         let content = (
-    //             await axios({
-    //                 //https://gitlab.autozone.com
-    //                 baseURL: sourceBaseUrl + '/api/v4/search?scope=projects&search=supply-chain/services',
-    //                 url: id,
-    //                 ...requestConfig,
-    //             })
-    //         ).data
-    //         let newIdent = id
-    //
-    //         const called = modifyContent?.(newIdent, content)
-    //
-    //         let cont = called?.content
-    //         if (cont && typeof cont === "string") {
-    //             content = cont
-    //         }
-    //
-    //         let fn
-    //         if ((fn = called?.filename) && typeof fn === "string") {
-    //             newIdent = fn
-    //         }
-    //         //#endregion
-    //
-    //         const checkIdent = newIdent.split("/").filter((seg) => seg !== "")
-    //         checkIdent.pop()
-    //
-    //         // if we are outputting to a subdirectory, make sure it exists
-    //         if (checkIdent.length > 0) {
-    //             mkdirSync(
-    //                 join(await getTargetDirectory(), checkIdent.join("/")),
-    //                 { recursive: true }
-    //             )
-    //         }
-    //
-    //         writeFileSync(join(await getTargetDirectory(), newIdent), content)
-    //     }
-    // }
-
-    // async function cleanContent_old(): Promise<void> {
-    //     const c = await findRemoteItems()
-    //
-    //     for (const { location } of c) {
-    //         delFile(join(await getTargetDirectory(), id))
-    //     }
-    // }
+    function deleteAllFilesInDir(dirPath : string, extension : string) {
+        try {
+            fs.readdirSync(dirPath).forEach(file => {
+                if (file.endsWith(extension)) {
+                    fs.rmSync(path.join(dirPath, file));
+                }
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     async function cleanContent() {
         const c = await findRemoteItems()
 
         for (const { location } of c) {
-            //delFile(join(await getTargetDirectory(), id))
-            fs.rmSync(`/home/oawad/myapps/WebstormProjects/gitlab-test/${location}`, {recursive: true, force: true});
+            deleteAllFilesInDir(`${context.siteDir}/docs/${location}`, '.md');
         }
     }
 
-    // if (!noRuntimeDownloads) {
-    //     await fetchGitLabContent()
-    // }
 
     // noinspection JSUnusedGlobalSymbols
     return {
