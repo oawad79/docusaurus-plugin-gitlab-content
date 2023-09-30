@@ -137,6 +137,7 @@ export default async function pluginGitLabContent(
 
         while ( m = rex.exec( fileContent ) ) {
             let rewrittenURL = `${sourceBaseUrl}/${project.path_with_namespace}/-/raw/${project.default_branch}/${m[2]}`
+            console.log('rewrittenURL = ', rewrittenURL);
             fileContent = fileContent.replaceAll(m[2] as string, rewrittenURL);
         }
 
