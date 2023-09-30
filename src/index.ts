@@ -63,7 +63,7 @@ export default async function pluginGitLabContent(
 
             promises.push(
                 axios.get(
-                    `${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=100&include_subgroups=true`,
+                    `${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=200&include_subgroups=true`,
                     requestConfig
                 ).then(response => {
                     fetchContent(response.data);
@@ -90,42 +90,46 @@ export default async function pluginGitLabContent(
     }
 
     function fetchContent(projects: any) {
-        console.log("Entering fetchContent")
+        let promises = [];
 
         for (const project of projects) {
-            axios.get(
-                `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`,
-                requestConfig
-            ).then(response => {
+            promises.push(
+                axios.get(
+                    `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`,
+                    requestConfig
+                ).then(response => {
 
-                if (!existsSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}`)) {
-                    mkdirSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}`, { recursive: true });
-                }
-
-                if (rewriteImages) {
-                    let rewrittenData: string = rewriteImagesURLs(response.data, project);
-
-                    if (replaceTextWithAnother) {
-                        replaceTextWithAnother.forEach(value => {
-                            rewrittenData = rewrittenData.replaceAll(value.replace, value.replaceWith);
-                        });
+                    if (!existsSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}`)) {
+                        mkdirSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}`, { recursive: true });
                     }
 
-                    if (escapeTags) {
-                        rewrittenData = safeTagsReplace(rewrittenData);
-                    }
+                    if (rewriteImages) {
+                        let rewrittenData: string = rewriteImagesURLs(response.data, project);
 
-                    writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, rewrittenData);
-                }
-                else {
-                    writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, response.data);
-                }
-            }).catch(
-                reason => {
-                    console.log("Error: ", reason)
-                }
+                        if (replaceTextWithAnother) {
+                            replaceTextWithAnother.forEach(value => {
+                                rewrittenData = rewrittenData.replaceAll(value.replace, value.replaceWith);
+                            });
+                        }
+
+                        if (escapeTags) {
+                            rewrittenData = safeTagsReplace(rewrittenData);
+                        }
+
+                        writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, rewrittenData);
+                    }
+                    else {
+                        writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, response.data);
+                    }
+                }).catch(
+                    // reason => {
+                    //     //console.log("Error: ", reason)
+                    // }
+                )
             )
         }
+
+        Promise.all(promises);
     }
 
     function rewriteImagesURLs(fileContent: string, project: any) : string {
@@ -134,7 +138,7 @@ export default async function pluginGitLabContent(
 
         while ( m = rex.exec( fileContent ) ) {
             let rewrittenURL = `${sourceBaseUrl}/${project.path_with_namespace}/-/raw/${project.default_branch}/${m[2]}`
-            console.log('rewrittenURL = ', rewrittenURL);
+            //console.log('rewrittenURL = ', rewrittenURL);
             fileContent = fileContent.replaceAll(m[2] as string, rewrittenURL);
         }
 
