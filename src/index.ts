@@ -67,7 +67,14 @@ export default async function pluginGitLabContent(
                     requestConfig
                 ).then(response => {
                     fetchContent(response.data);
-                })
+                }).catch(error => {
+                    console.log("*********************************** Downloading Group *********************************************")
+                    console.log(`Location = ${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=200&include_subgroups=true`)
+                    console.log("Error: ", error)
+                    console.log("********************************************************************************")
+
+                    }
+                )
             );
         }
 
@@ -94,6 +101,7 @@ export default async function pluginGitLabContent(
 
         for (const project of projects) {
             //promises.push(
+                //console.log(`${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`);
                 axios.get(
                     `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`,
                     requestConfig
@@ -123,7 +131,10 @@ export default async function pluginGitLabContent(
                     }
                 }).catch(
                     reason => {
+                        console.log("*********************************** Downloading Project *********************************************")
+                        console.log(`Location = ${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`)
                         console.log("Error: ", reason)
+                        console.log("********************************************************************************")
                     }
                 )
             //)
