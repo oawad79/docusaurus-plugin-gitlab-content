@@ -93,7 +93,7 @@ export default async function pluginGitLabContent(
         let promises = [];
 
         for (const project of projects) {
-            promises.push(
+            //promises.push(
                 axios.get(
                     `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`,
                     requestConfig
@@ -126,10 +126,10 @@ export default async function pluginGitLabContent(
                     //     //console.log("Error: ", reason)
                     // }
                 )
-            )
+            //)
         }
 
-        Promise.all(promises);
+        //Promise.all(promises);
     }
 
     function rewriteImagesURLs(fileContent: string, project: any) : string {
