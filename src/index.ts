@@ -119,7 +119,7 @@ export default async function pluginGitLabContent(
         console.log("Entering fetchContent")
 
         for (const project of projects) {
-            console.log("Looping projects ", project)
+            //console.log("Looping projects ", project)
             //if (project.path_with_namespace.startsWith(location)) {
                 axios.get(
                     `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`,
