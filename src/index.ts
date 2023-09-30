@@ -4,6 +4,7 @@ import { existsSync, writeFileSync, mkdirSync } from "fs"
 
 import { timeIt } from "./utils"
 import {GitLabContentPluginOptions} from "./types"
+import path from "path";
 // import fs from "fs";
 // import path from "path";
 
@@ -108,8 +109,9 @@ export default async function pluginGitLabContent(
             if (project.namespace.kind !== 'user' && !project.empty_repo && project.readme_url) {
                 promises.push(
                 //console.log(`${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`);
+
                 axios.get(
-                    `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`,
+                    `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.${path.extname(project.readme_url)}/raw`,
                     requestConfig
                 ).then(response => {
 
