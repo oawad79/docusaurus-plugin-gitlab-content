@@ -100,7 +100,10 @@ export default async function pluginGitLabContent(
         //let promises = [];
 
         for (const project of projects) {
-            //promises.push(
+
+            //skip personal repos
+            if (project.namespace.kind !== 'user') {
+                //promises.push(
                 //console.log(`${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`);
                 axios.get(
                     `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`,
@@ -108,7 +111,7 @@ export default async function pluginGitLabContent(
                 ).then(response => {
 
                     if (!existsSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}`)) {
-                        mkdirSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}`, { recursive: true });
+                        mkdirSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}`, {recursive: true});
                     }
 
                     if (rewriteImages) {
@@ -125,8 +128,7 @@ export default async function pluginGitLabContent(
                         }
 
                         writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, rewrittenData);
-                    }
-                    else {
+                    } else {
                         writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, response.data);
                     }
                 }).catch(
@@ -137,6 +139,7 @@ export default async function pluginGitLabContent(
                         console.log("********************************************************************************")
                     }
                 )
+            }
             //)
         }
 
