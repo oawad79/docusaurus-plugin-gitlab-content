@@ -85,9 +85,11 @@ export default async function pluginGitLabContent(
                     `${sourceBaseUrl}/api/v4/groups/${location}/projects?per_page=100&include_subgroups=true`,
                     requestConfig
                 ).then(response => {
+                    console.log(`does this exists? ${context.siteDir}/${outDir}/${response.data.path_with_namespace}`);
                     if (!existsSync(`${context.siteDir}/${outDir}/${response.data.path_with_namespace}`)) {
                         //console.log(`mkDirSync = ${context.siteDir}/${outDir}/${location}`)
-                        mkdirSync(`${context.siteDir}/${outDir}/${response.data.path_with_namespace}`, { recursive: true })
+                        console.log(`Creating directory ${context.siteDir}/${outDir}/${response.data.path_with_namespace}`);
+                        mkdirSync(`${context.siteDir}/${outDir}/${response.data.path_with_namespace}`, { recursive: true });
                     }
 
                     fetchContent(response.data);
