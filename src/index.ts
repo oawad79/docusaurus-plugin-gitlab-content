@@ -55,7 +55,7 @@ export default async function pluginGitLabContent(
 
         let groups : any[] = response.data;
 
-        let promises = [];
+        //let promises = [];
 
         //groups.forEach(group => {
         for (let group of groups) {
@@ -68,7 +68,7 @@ export default async function pluginGitLabContent(
                 let totalPages = 1;
                 do {
                     console.log(`${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=100&page=${currentPage}&include_subgroups=true`);
-                    promises.push(
+                    //promises.push(
                         axios.get(
                             `${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=100&page=${currentPage}&include_subgroups=true`,
                             requestConfig
@@ -84,14 +84,14 @@ export default async function pluginGitLabContent(
 
                             }
                         )
-                    );
+                    //);
 
                     currentPage++;
                 } while (currentPage <= totalPages);
             }
         }
 
-        Promise.all(promises);
+        //Promise.all(promises);
     }
 
     let tagsToReplace = {
