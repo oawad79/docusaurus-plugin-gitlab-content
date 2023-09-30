@@ -8,7 +8,7 @@
     "scripts": {
         "build": "tsc",
         "prettier": "prettier --write \"**/*.{js,ts,md,json}\"",
-        "release": "npm version patch & npm publish"
+        "release": "npm build & git add . & git commit -m 'gitlab' & git push & npm version patch & npm publish"
     },
     "prettier": {
         "semi": false,

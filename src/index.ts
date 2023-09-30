@@ -133,7 +133,7 @@ export default async function pluginGitLabContent(
 
     function rewriteImagesURLs(fileContent: string, project: any) : string {
         let m : RegExpExecArray | null,
-            rex = /\[([^\[]+)\]\((.*\.(jpg|png|gif|jpeg|JPG|PNG|GIF|JPEG))\)/gm;
+            rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|JPG|PNG|GIF|JPEG))\)/gm;
 
         while ( m = rex.exec( fileContent ) ) {
             let rewrittenURL = `${sourceBaseUrl}/${project.path_with_namespace}/-/raw/${project.default_branch}/${m[2]}`
