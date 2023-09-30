@@ -90,7 +90,7 @@ export default async function pluginGitLabContent(
     }
 
     function fetchContent(projects: any) {
-        let promises = [];
+        //let promises = [];
 
         for (const project of projects) {
             //promises.push(
@@ -122,9 +122,9 @@ export default async function pluginGitLabContent(
                         writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, response.data);
                     }
                 }).catch(
-                    // reason => {
-                    //     //console.log("Error: ", reason)
-                    // }
+                    reason => {
+                        console.log("Error: ", reason)
+                    }
                 )
             //)
         }
