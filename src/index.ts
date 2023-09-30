@@ -58,7 +58,7 @@ export default async function pluginGitLabContent(
 
         //groups.forEach(group => {
         for (let group of groups) {
-            if (!excludeGroups || !excludeGroups?.includes(group.id)) {
+            if (!excludeGroups || !excludeGroups?.includes(group.name)) {
                 if (!existsSync(`${context.siteDir}/${outDir}/${group.path}`)) {
                     mkdirSync(`${context.siteDir}/${outDir}/${group.path}`, {recursive: true});
                 }
