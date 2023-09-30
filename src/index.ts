@@ -3,9 +3,9 @@ import axios from "axios"
 import { existsSync, writeFileSync, mkdirSync } from "fs"
 
 import { timeIt } from "./utils"
-import {Fetchable, GitLabContentPluginOptions} from "./types"
-import fs from "fs";
-import path from "path";
+import {GitLabContentPluginOptions} from "./types"
+// import fs from "fs";
+// import path from "path";
 
 // noinspection JSUnusedGlobalSymbols
 export default async function pluginGitLabContent(
@@ -16,8 +16,7 @@ export default async function pluginGitLabContent(
         name,
         sourceBaseUrl,
         outDir,
-        locations,
-        performCleanup = true,
+        // performCleanup = true,
         requestConfig = {},
         rewriteImages  = true,
         replaceTextWithAnother,
@@ -39,59 +38,34 @@ export default async function pluginGitLabContent(
         )
     }
 
-    if (!locations) {
-        throw new Error(
-            "The documents field is undefined, so I don't know what to fetch! It should be a string array, function that returns a string array, or promise that resolves with a string array."
-        )
-    }
-
     if (!sourceBaseUrl) {
         throw new Error(
             "The sourceBaseUrl field is undefined, so I don't know where to fetch from!"
         )
     }
 
-    async function findRemoteItems(): Promise<Fetchable[]> {
-        console.log("Entering findRemoteItems")
-        const a: Fetchable[] = []
-
-        const resolvedLocations =
-            typeof locations === "function"
-                ? locations()
-                : ((await locations) as string[])
-
-        for (const location of resolvedLocations) {
-            console.log('Deleting location = ', location);
-            a.push({ location })
-        }
-
-        return a
-    }
-
     async function fetchGitLabContent() {
         console.log("Entering fetchGitLabContent")
 
-        const c = await findRemoteItems();
+        let response = await axios.get(
+                                                `${sourceBaseUrl}/api/v4/groups?top_level_only=true&all_available=true`
+                                                     ,requestConfig);
+
+        let groups : any[] = response.data;
 
         let promises = [];
 
-        for (let { location } of c) {
-            //console.log("Looping ", location)
-            //console.log(`${sourceBaseUrl}/api/v4/search?scope=projects&search=${location}`);
+        //groups.forEach(group => {
+        for (let group of groups) {
+            if (!existsSync(`${context.siteDir}/${outDir}/${group.path}`)) {
+                mkdirSync(`${context.siteDir}/${outDir}/${group.path}`, { recursive: true });
+            }
 
             promises.push(
                 axios.get(
-                    //`${sourceBaseUrl}/api/v4/search?scope=projects&search=${location}`,
-                    `${sourceBaseUrl}/api/v4/groups/${location}/projects?per_page=100&include_subgroups=true`,
+                    `${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=100&include_subgroups=true`,
                     requestConfig
                 ).then(response => {
-                    console.log(`does this exists? ${context.siteDir}/${outDir}/${response.data.path_with_namespace}`);
-                    if (!existsSync(`${context.siteDir}/${outDir}/${response.data.path_with_namespace}`)) {
-                        //console.log(`mkDirSync = ${context.siteDir}/${outDir}/${location}`)
-                        console.log(`Creating directory ${context.siteDir}/${outDir}/${response.data.path_with_namespace}`);
-                        mkdirSync(`${context.siteDir}/${outDir}/${response.data.path_with_namespace}`, { recursive: true });
-                    }
-
                     fetchContent(response.data);
                 })
             );
@@ -119,38 +93,38 @@ export default async function pluginGitLabContent(
         console.log("Entering fetchContent")
 
         for (const project of projects) {
-            //console.log("Looping projects ", project)
-            //if (project.path_with_namespace.startsWith(location)) {
-                axios.get(
-                    `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`,
-                    requestConfig
-                ).then(response => {
-                    //console.log(`Writing to = ${context.siteDir}/${outDir}/${location}/${project.name}.md`);
-                    //console.log("Received file = ", response.data);
-                    if (rewriteImages) {
-                        let rewrittenData: string = rewriteImagesURLs(response.data, project);
+            axios.get(
+                `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`,
+                requestConfig
+            ).then(response => {
 
-                        if (replaceTextWithAnother) {
-                            replaceTextWithAnother.forEach(value => {
-                                rewrittenData = rewrittenData.replaceAll(value.replace, value.replaceWith);
-                            });
-                        }
+                if (!existsSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}`)) {
+                    mkdirSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}`, { recursive: true });
+                }
 
-                        if (escapeTags) {
-                            rewrittenData = safeTagsReplace(rewrittenData);
-                        }
+                if (rewriteImages) {
+                    let rewrittenData: string = rewriteImagesURLs(response.data, project);
 
-                        writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, rewrittenData);
+                    if (replaceTextWithAnother) {
+                        replaceTextWithAnother.forEach(value => {
+                            rewrittenData = rewrittenData.replaceAll(value.replace, value.replaceWith);
+                        });
                     }
-                    else {
-                        writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, response.data);
+
+                    if (escapeTags) {
+                        rewrittenData = safeTagsReplace(rewrittenData);
                     }
-                }).catch(
-                    reason => {
-                        console.log("Error: ", reason)
-                    }
-                )
-            //}
+
+                    writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, rewrittenData);
+                }
+                else {
+                    writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, response.data);
+                }
+            }).catch(
+                reason => {
+                    console.log("Error: ", reason)
+                }
+            )
         }
     }
 
@@ -167,26 +141,26 @@ export default async function pluginGitLabContent(
         return fileContent;
     }
 
-    function deleteAllFilesInDir(dirPath : string, extension : string) {
-        try {
-            fs.readdirSync(dirPath).forEach(file => {
-                if (file.endsWith(extension)) {
-                    fs.rmSync(path.join(dirPath, file));
-                }
-            });
-        } catch (error) {
-            console.log(error);
-        }
-    }
+    // function deleteAllFilesInDir(dirPath : string, extension : string) {
+    //     try {
+    //         fs.readdirSync(dirPath).forEach(file => {
+    //             if (file.endsWith(extension)) {
+    //                 fs.rmSync(path.join(dirPath, file));
+    //             }
+    //         });
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
 
-    async function cleanContent() {
-        const c = await findRemoteItems()
-
-        for (const { location } of c) {
-            console.log(`Now Deleting ${context.siteDir}/${outDir}/${location}`);
-            deleteAllFilesInDir(`${context.siteDir}/${outDir}/${location}`, '.mdx');
-        }
-    }
+    // async function cleanContent() {
+    //     const c = await findRemoteItems()
+    //
+    //     for (const { location } of c) {
+    //         console.log(`Now Deleting ${context.siteDir}/${outDir}/${location}`);
+    //         deleteAllFilesInDir(`${context.siteDir}/${outDir}/${location}`, '.mdx');
+    //     }
+    // }
 
 
     // noinspection JSUnusedGlobalSymbols
@@ -194,22 +168,22 @@ export default async function pluginGitLabContent(
         //name: `docusaurus-plugin-gitlab-content-${name}`,
         name: `docusaurus-plugin-gitlab2-content`,
 
-        async postBuild(): Promise<void> {
-            if (performCleanup) {
-                return await cleanContent()
-            }
-        },
+        // async postBuild(): Promise<void> {
+        //     if (performCleanup) {
+        //         return await cleanContent()
+        //     }
+        // },
 
         extendCli(cli): void {
             cli.command(`download-remote-${name}`)
                 .description(`Downloads the remote ${name} data.`)
                 .action(async () => await timeIt(`fetch ${name}`, fetchGitLabContent))
 
-            cli.command(`clear-remote-${name}`)
-                .description(
-                    `Removes the local copy of the remote ${name} data.`
-                )
-                .action(async () => await timeIt(`clear ${name}`, cleanContent))
+            // cli.command(`clear-remote-${name}`)
+            //     .description(
+            //         `Removes the local copy of the remote ${name} data.`
+            //     )
+            //     .action(async () => await timeIt(`clear ${name}`, cleanContent))
         },
     }
 }
