@@ -108,42 +108,42 @@ export default async function pluginGitLabContent(
             //skip personal repos and empty ones
             if (project.namespace.kind !== 'user' && !project.empty_repo && project.readme_url) {
                 promises.push(
-                //console.log(`${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`);
+                    //console.log(`${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`);
 
-                axios.get(
-                    `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.${path.extname(project.readme_url)}/raw`,
-                    requestConfig
-                ).then(response => {
+                    axios.get(
+                        `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.${path.extname(project.readme_url)}/raw`,
+                        requestConfig
+                    ).then(response => {
 
-                    if (!existsSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}`)) {
-                        mkdirSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}`, {recursive: true});
-                    }
-
-                    if (rewriteImages) {
-                        let rewrittenData: string = rewriteImagesURLs(response.data, project);
-
-                        if (replaceTextWithAnother) {
-                            replaceTextWithAnother.forEach(value => {
-                                rewrittenData = rewrittenData.replaceAll(value.replace, value.replaceWith);
-                            });
+                        if (!existsSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}`)) {
+                            mkdirSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}`, {recursive: true});
                         }
 
-                        if (escapeTags) {
-                            rewrittenData = safeTagsReplace(rewrittenData);
-                        }
+                        if (rewriteImages) {
+                            let rewrittenData: string = rewriteImagesURLs(response.data, project);
 
-                        writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, rewrittenData);
-                    } else {
-                        writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, response.data);
-                    }
-                }).catch(
-                    reason => {
-                        console.log("*********************************** Downloading Project *********************************************")
-                        console.log(`Location = ${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`)
-                        console.log("Error: ", reason)
-                        console.log("********************************************************************************")
-                    }
-                ))
+                            if (replaceTextWithAnother) {
+                                replaceTextWithAnother.forEach(value => {
+                                    rewrittenData = rewrittenData.replaceAll(value.replace, value.replaceWith);
+                                });
+                            }
+
+                            if (escapeTags) {
+                                rewrittenData = safeTagsReplace(rewrittenData);
+                            }
+
+                            writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, rewrittenData);
+                        } else {
+                            writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, response.data);
+                        }
+                    }).catch(
+                        reason => {
+                            console.log("*********************************** Downloading Project *********************************************")
+                            console.log(`Location = ${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.${path.extname(project.readme_url)}/raw`)
+                            console.log("Error: ", reason)
+                            console.log("********************************************************************************")
+                        })
+                )
             }
 
         }
