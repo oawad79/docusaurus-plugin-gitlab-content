@@ -111,7 +111,7 @@ export default async function pluginGitLabContent(
                     //console.log(`${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`);
 
                     axios.get(
-                        `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README${path.extname(project.readme_url)}/raw`,
+                        `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/${path.basename(project.readme_url)}/raw`,
                         requestConfig
                     ).then(response => {
 
