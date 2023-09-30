@@ -106,7 +106,9 @@ export default async function pluginGitLabContent(
         for (const project of projects) {
 
             //skip personal repos and empty ones
-            if (project.namespace.kind !== 'user' && !project.empty_repo && project.readme_url) {
+            if (project.namespace.kind !== 'user' && !project.empty_repo && project.readme_url &&
+                !excludeGroups || !excludeGroups?.includes(project.path_with_namespace.substring(0, project.path_with_namespace.indexOf(' ')))) {
+
                 promises.push(
                     //console.log(`${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`);
 
