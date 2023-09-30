@@ -86,7 +86,7 @@ export default async function pluginGitLabContent(
                     );
 
                     currentPage++;
-                } while (currentPage < totalPages);
+                } while (currentPage <= totalPages);
             }
         }
 
