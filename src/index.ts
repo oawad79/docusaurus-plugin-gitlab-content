@@ -138,10 +138,12 @@ export default async function pluginGitLabContent(
                         }
                     }).catch(
                         reason => {
-                            console.log("*********************************** Downloading Project *********************************************")
-                            console.log(`Location = ${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README${path.extname(project.readme_url)}/raw`)
-                            console.log("Error: ", reason)
-                            console.log("********************************************************************************")
+                            if (reason.status !== 403) {
+                                console.log("*********************************** Downloading Project *********************************************")
+                                console.log(`Location = ${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README${path.extname(project.readme_url)}/raw`)
+                                console.log("Error: ", reason)
+                                console.log("********************************************************************************")
+                            }
                         })
                 )
             }
