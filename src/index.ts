@@ -111,7 +111,7 @@ export default async function pluginGitLabContent(
                     //console.log(`${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`);
 
                     axios.get(
-                        `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.${path.extname(project.readme_url)}/raw`,
+                        `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README${path.extname(project.readme_url)}/raw`,
                         requestConfig
                     ).then(response => {
 
@@ -139,7 +139,7 @@ export default async function pluginGitLabContent(
                     }).catch(
                         reason => {
                             console.log("*********************************** Downloading Project *********************************************")
-                            console.log(`Location = ${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.${path.extname(project.readme_url)}/raw`)
+                            console.log(`Location = ${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README${path.extname(project.readme_url)}/raw`)
                             console.log("Error: ", reason)
                             console.log("********************************************************************************")
                         })
