@@ -73,6 +73,7 @@ export default async function pluginGitLabContent(
                             requestConfig
                         ).then(response => {
                             totalPages = response.headers['x-total-pages'];
+                            console.log(`${group} Total pages = `, totalPages);
                             fetchContent(response.data);
                         }).catch(error => {
                                 console.log("*********************************** Downloading Group *********************************************")
