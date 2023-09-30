@@ -56,7 +56,7 @@ export interface GitLabContentPluginOptions {
 
     rewriteImages: boolean
 
-    replaceTextWithAnother?: Replacement
+    replaceTextWithAnother?: Replacement[]
 
 
 }

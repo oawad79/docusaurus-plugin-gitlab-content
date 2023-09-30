@@ -114,7 +114,10 @@ export default async function pluginGitLabContent(
                         let rewrittenData: string = rewriteImagesURLs(response.data, project);
 
                         if (replaceTextWithAnother) {
-                            rewrittenData = rewrittenData.replaceAll(replaceTextWithAnother.replace, replaceTextWithAnother.replaceWith);
+                            replaceTextWithAnother.forEach(value => {
+                                rewrittenData = rewrittenData.replaceAll(value.replace, value.replaceWith);
+                            });
+
                         }
 
                         writeFileSync(`${context.siteDir}/${outDir}/${location}/${project.name.trim()}.mdx`, rewrittenData);
