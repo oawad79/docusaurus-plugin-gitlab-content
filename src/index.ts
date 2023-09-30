@@ -20,7 +20,8 @@ export default async function pluginGitLabContent(
         requestConfig = {},
         rewriteImages  = true,
         replaceTextWithAnother,
-        escapeTags
+        escapeTags,
+        excludeGroups
     } = options
 
     console.log("Site Directory : ", context.siteDir);
@@ -57,25 +58,27 @@ export default async function pluginGitLabContent(
 
         //groups.forEach(group => {
         for (let group of groups) {
-            if (!existsSync(`${context.siteDir}/${outDir}/${group.path}`)) {
-                mkdirSync(`${context.siteDir}/${outDir}/${group.path}`, { recursive: true });
+            if (!excludeGroups || !excludeGroups?.includes(group.id)) {
+                if (!existsSync(`${context.siteDir}/${outDir}/${group.path}`)) {
+                    mkdirSync(`${context.siteDir}/${outDir}/${group.path}`, {recursive: true});
+                }
+
+                promises.push(
+                    axios.get(
+                        `${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=200&include_subgroups=true`,
+                        requestConfig
+                    ).then(response => {
+                        fetchContent(response.data);
+                    }).catch(error => {
+                            console.log("*********************************** Downloading Group *********************************************")
+                            console.log(`Location = ${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=200&include_subgroups=true`)
+                            console.log("Error: ", error)
+                            console.log("********************************************************************************")
+
+                        }
+                    )
+                );
             }
-
-            promises.push(
-                axios.get(
-                    `${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=200&include_subgroups=true`,
-                    requestConfig
-                ).then(response => {
-                    fetchContent(response.data);
-                }).catch(error => {
-                    console.log("*********************************** Downloading Group *********************************************")
-                    console.log(`Location = ${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=200&include_subgroups=true`)
-                    console.log("Error: ", error)
-                    console.log("********************************************************************************")
-
-                    }
-                )
-            );
         }
 
         Promise.all(promises);
@@ -101,7 +104,7 @@ export default async function pluginGitLabContent(
 
         for (const project of projects) {
 
-            //skip personal repos
+            //skip personal repos and empty ones
             if (project.namespace.kind !== 'user' && !project.namespace.empty_repo) {
                 promises.push(
                 //console.log(`${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`);

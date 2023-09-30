@@ -59,6 +59,8 @@ export interface GitLabContentPluginOptions {
     replaceTextWithAnother?: Replacement[]
 
     escapeTags?: boolean
+
+    excludeGroups?: string[]
 }
 
 // noinspection SpellCheckingInspection
