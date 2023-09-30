@@ -64,21 +64,28 @@ export default async function pluginGitLabContent(
                     mkdirSync(`${context.siteDir}/${outDir}/${group.path}`, {recursive: true});
                 }
 
-                promises.push(
-                    axios.get(
-                        `${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=200&include_subgroups=true`,
-                        requestConfig
-                    ).then(response => {
-                        fetchContent(response.data);
-                    }).catch(error => {
-                            console.log("*********************************** Downloading Group *********************************************")
-                            console.log(`Location = ${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=200&include_subgroups=true`)
-                            console.log("Error: ", error)
-                            console.log("********************************************************************************")
+                let currentPage = 1;
+                let totalPages = 1;
+                do {
+                    promises.push(
+                        axios.get(
+                            `${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=100&page=${currentPage}&include_subgroups=true`,
+                            requestConfig
+                        ).then(response => {
+                            totalPages = response.headers['x-total-pages'];
+                            fetchContent(response.data);
+                        }).catch(error => {
+                                console.log("*********************************** Downloading Group *********************************************")
+                                console.log(`Location = ${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=200&include_subgroups=true`)
+                                console.log("Error: ", error)
+                                console.log("********************************************************************************")
 
-                        }
-                    )
-                );
+                            }
+                        )
+                    );
+
+                    currentPage++;
+                } while (currentPage < totalPages);
             }
         }
 
