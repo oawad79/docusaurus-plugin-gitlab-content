@@ -87,7 +87,7 @@ export default async function pluginGitLabContent(
                 ).then(response => {
                     if (!existsSync(location)) {
                         //console.log(`mkDirSync = ${context.siteDir}/${outDir}/${location}`)
-                        mkdirSync(`${context.siteDir}/${outDir}/${response.data.name_with_namespace}`, { recursive: true })
+                        mkdirSync(`${context.siteDir}/${outDir}/${response.data.path_with_namespace}`, { recursive: true })
                     }
 
                     fetchContent(response.data);
@@ -138,10 +138,10 @@ export default async function pluginGitLabContent(
                             rewrittenData = safeTagsReplace(rewrittenData);
                         }
 
-                        writeFileSync(`${context.siteDir}/${outDir}/${project.name_with_namespace}/${project.name.trim()}.mdx`, rewrittenData);
+                        writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, rewrittenData);
                     }
                     else {
-                        writeFileSync(`${context.siteDir}/${outDir}/${project.name_with_namespace}/${project.name.trim()}.mdx`, response.data);
+                        writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, response.data);
                     }
                 }).catch(
                     reason => {
