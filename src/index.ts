@@ -97,13 +97,13 @@ export default async function pluginGitLabContent(
     }
 
     function fetchContent(projects: any) {
-        //let promises = [];
+        let promises = [];
 
         for (const project of projects) {
 
             //skip personal repos
             if (project.namespace.kind !== 'user') {
-                //promises.push(
+                promises.push(
                 //console.log(`${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`);
                 axios.get(
                     `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`,
@@ -138,12 +138,12 @@ export default async function pluginGitLabContent(
                         console.log("Error: ", reason)
                         console.log("********************************************************************************")
                     }
-                )
+                ))
             }
-            //)
+
         }
 
-        //Promise.all(promises);
+        Promise.all(promises);
     }
 
     function rewriteImagesURLs(fileContent: string, project: any) : string {
