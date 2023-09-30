@@ -117,10 +117,10 @@ export default async function pluginGitLabContent(
                             rewrittenData = rewrittenData.replaceAll(replaceTextWithAnother.replace, replaceTextWithAnother.replaceWith);
                         }
 
-                        writeFileSync(`${context.siteDir}/${outDir}/${location}/${project.name.trim()}.md`, rewrittenData);
+                        writeFileSync(`${context.siteDir}/${outDir}/${location}/${project.name.trim()}.mdx`, rewrittenData);
                     }
                     else {
-                        writeFileSync(`${context.siteDir}/${outDir}/${location}/${project.name.trim()}.md`, response.data);
+                        writeFileSync(`${context.siteDir}/${outDir}/${location}/${project.name.trim()}.mdx`, response.data);
                     }
                 }).catch(
                     reason => {
@@ -160,7 +160,7 @@ export default async function pluginGitLabContent(
 
         for (const { location } of c) {
             console.log(`Now Deleting ${context.siteDir}/${outDir}/${location}`);
-            deleteAllFilesInDir(`${context.siteDir}/${outDir}/${location}`, '.md');
+            deleteAllFilesInDir(`${context.siteDir}/${outDir}/${location}`, '.mdx');
         }
     }
 
