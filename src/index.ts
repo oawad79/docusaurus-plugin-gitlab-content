@@ -105,7 +105,7 @@ export default async function pluginGitLabContent(
         for (const project of projects) {
 
             //skip personal repos and empty ones
-            if (project.namespace.kind !== 'user' && !project.namespace.empty_repo) {
+            if (project.namespace.kind !== 'user' && !project.empty_repo) {
                 promises.push(
                 //console.log(`${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README.md/raw`);
                 axios.get(
