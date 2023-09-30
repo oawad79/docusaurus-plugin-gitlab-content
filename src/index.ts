@@ -87,10 +87,10 @@ export default async function pluginGitLabContent(
                 ).then(response => {
                     if (!existsSync(location)) {
                         //console.log(`mkDirSync = ${context.siteDir}/${outDir}/${location}`)
-                        mkdirSync(`${context.siteDir}/${outDir}/${location}`, { recursive: true })
+                        mkdirSync(`${context.siteDir}/${outDir}/${response.data.name_with_namespace}`, { recursive: true })
                     }
 
-                    fetchContent(response.data, location);
+                    fetchContent(response.data);
                 })
             );
         }
@@ -113,7 +113,7 @@ export default async function pluginGitLabContent(
         return str.replace(/[<>]/g, replaceTag);
     }
 
-    function fetchContent(projects: any, location: string) {
+    function fetchContent(projects: any) {
         console.log("Entering fetchContent")
 
         for (const project of projects) {
@@ -138,10 +138,10 @@ export default async function pluginGitLabContent(
                             rewrittenData = safeTagsReplace(rewrittenData);
                         }
 
-                        writeFileSync(`${context.siteDir}/${outDir}/${location}/${project.name.trim()}.mdx`, rewrittenData);
+                        writeFileSync(`${context.siteDir}/${outDir}/${project.name_with_namespace}/${project.name.trim()}.mdx`, rewrittenData);
                     }
                     else {
-                        writeFileSync(`${context.siteDir}/${outDir}/${location}/${project.name.trim()}.mdx`, response.data);
+                        writeFileSync(`${context.siteDir}/${outDir}/${project.name_with_namespace}/${project.name.trim()}.mdx`, response.data);
                     }
                 }).catch(
                     reason => {
