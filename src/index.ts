@@ -20,7 +20,8 @@ export default async function pluginGitLabContent(
         performCleanup = true,
         requestConfig = {},
         rewriteImages  = true,
-        replaceTextWithAnother
+        replaceTextWithAnother,
+        escapeTags
     } = options
 
     console.log("Site Directory : ", context.siteDir);
@@ -97,6 +98,20 @@ export default async function pluginGitLabContent(
         Promise.all(promises);
     }
 
+    let tagsToReplace = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;'
+    };
+
+    function replaceTag(tag : string) {
+        // @ts-ignore
+        return tagsToReplace[tag] || tag;
+    }
+
+    function safeTagsReplace(str : string) {
+        return str.replace(/[<>]/g, replaceTag);
+    }
 
     function fetchContent(projects: any, location: string) {
         console.log("Entering fetchContent")
@@ -117,7 +132,10 @@ export default async function pluginGitLabContent(
                             replaceTextWithAnother.forEach(value => {
                                 rewrittenData = rewrittenData.replaceAll(value.replace, value.replaceWith);
                             });
+                        }
 
+                        if (escapeTags) {
+                            rewrittenData = safeTagsReplace(rewrittenData);
                         }
 
                         writeFileSync(`${context.siteDir}/${outDir}/${location}/${project.name.trim()}.mdx`, rewrittenData);

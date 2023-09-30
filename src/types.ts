@@ -58,7 +58,7 @@ export interface GitLabContentPluginOptions {
 
     replaceTextWithAnother?: Replacement[]
 
-
+    escapeTags?: boolean
 }
 
 // noinspection SpellCheckingInspection
@@ -73,3 +73,7 @@ export type Replacement = {
     replace: string
     replaceWith: string
 }
+
+// export type Map<K, V> = {
+//     [P in keyof K]: V;
+// };
