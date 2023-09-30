@@ -69,22 +69,23 @@ export default async function pluginGitLabContent(
                 do {
                     console.log(`${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=100&page=${currentPage}&include_subgroups=true`);
                     //promises.push(
-                        axios.get(
+                    let response = await axios.get(
                             `${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=100&page=${currentPage}&include_subgroups=true`,
                             requestConfig
-                        ).then(response => {
-                            totalPages = response.headers['x-total-pages'];
-                            console.log(`${group} Total pages = `, totalPages);
-                            fetchContent(response.data);
-                        }).catch(error => {
-                                console.log("*********************************** Downloading Group *********************************************")
-                                console.log(`Location = ${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=200&include_subgroups=true`)
-                                console.log("Error: ", error)
-                                console.log("********************************************************************************")
+                        );
 
-                            }
-                        )
-                    //);
+                    totalPages = response.headers['x-total-pages'];
+                    console.log(`${group} Total pages = `, totalPages);
+                    fetchContent(response.data);
+                    //     }).catch(error => {
+                    //             console.log("*********************************** Downloading Group *********************************************")
+                    //             console.log(`Location = ${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=200&include_subgroups=true`)
+                    //             console.log("Error: ", error)
+                    //             console.log("********************************************************************************")
+                    //
+                    //         }
+                    //     )
+                    // //);
 
                     currentPage++;
                 } while (currentPage <= totalPages);
