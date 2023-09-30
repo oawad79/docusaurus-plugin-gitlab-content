@@ -67,6 +67,7 @@ export default async function pluginGitLabContent(
                 let currentPage = 1;
                 let totalPages = 1;
                 do {
+                    console.log(`${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=100&page=${currentPage}&include_subgroups=true`);
                     promises.push(
                         axios.get(
                             `${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=100&page=${currentPage}&include_subgroups=true`,
