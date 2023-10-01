@@ -110,14 +110,14 @@ export default async function pluginGitLabContent(
     //     return str.replace(/[<>]/g, replaceTag);
     // }
 
-    // function stringInsert(text : string, index : number, toInsert: string) {
-    //     if (index > 0)
-    //     {
-    //         return text.substring(0, index) + toInsert + text.substring(index, text.length);
-    //     }
-    //
-    //     return toInsert + text;
-    // }
+    function stringInsert(text : string, index : number, toInsert: string) {
+        if (index > 0)
+        {
+            return text.substring(0, index) + toInsert + text.substring(index, text.length);
+        }
+
+        return toInsert + text;
+    }
 
     function fetchContent(projects: any) {
         let promises = [];
@@ -142,7 +142,7 @@ export default async function pluginGitLabContent(
                         let markdown = turndownService.turndown(response.data);
 
                         if (rewriteImages) {
-                            // markdown = rewriteImagesURLs(markdown, project);
+                            markdown = rewriteImagesURLs(markdown, project);
                             //
                             if (replaceTextWithAnother) {
                                 replaceTextWithAnother.forEach(value => {
@@ -182,32 +182,32 @@ export default async function pluginGitLabContent(
         Promise.all(promises);
     }
 
-    // function rewriteImagesURLs(fileContent: string, project: any) : string {
-    //     let m : RegExpExecArray | null,
-    //         m2 : RegExpExecArray | null,
-    //         m3 : RegExpExecArray | null,
-    //         rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|pdf|JPG|PNG|GIF|JPEG|SVG|PDF)).*\)/gm,
-    //         removeRex = /\[([^\[]+)?\]\(\)/gm,
-    //         imgRex = /(<img("[^"]*"|[^>])+)(?<!\/)>/gm;
-    //
-    //     while ( m = rex.exec( fileContent ) ) {
-    //         let rewrittenURL = `${sourceBaseUrl}/${project.path_with_namespace}/-/raw/${project.default_branch}/${m[2]}`
-    //         //console.log('rewrittenURL = ', rewrittenURL);
-    //         fileContent = fileContent.replaceAll(m[2] as string, rewrittenURL);
-    //     }
-    //
-    //     //remove all empty ones like [blah](empty)
-    //     while ( m2 = removeRex.exec( fileContent ) ) {
-    //         fileContent = fileContent.replaceAll(m2[2] as string, "");
-    //     }
-    //
-    //     while ( m3 = imgRex.exec( fileContent ) ) {
-    //         let newImgTag = stringInsert(m3[2] as string, (m3[2] as string).length, "/")
-    //         fileContent = fileContent.replaceAll(m3[2] as string, newImgTag);
-    //     }
-    //
-    //     return fileContent;
-    // }
+    function rewriteImagesURLs(fileContent: string, project: any) : string {
+        let m : RegExpExecArray | null,
+            m2 : RegExpExecArray | null,
+            m3 : RegExpExecArray | null,
+            rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|pdf|JPG|PNG|GIF|JPEG|SVG|PDF)).*\)/gm,
+            removeRex = /\[([^\[]+)?\]\(\)/gm,
+            imgRex = /(<img("[^"]*"|[^>])+)(?<!\/)>/gm;
+
+        while ( m = rex.exec( fileContent ) ) {
+            let rewrittenURL = `${sourceBaseUrl}/${project.path_with_namespace}/-/raw/${project.default_branch}/${m[2]}`
+            //console.log('rewrittenURL = ', rewrittenURL);
+            fileContent = fileContent.replaceAll(m[2] as string, rewrittenURL);
+        }
+
+        //remove all empty ones like [blah](empty)
+        while ( m2 = removeRex.exec( fileContent ) ) {
+            fileContent = fileContent.replaceAll(m2[2] as string, "");
+        }
+
+        while ( m3 = imgRex.exec( fileContent ) ) {
+            let newImgTag = stringInsert(m3[2] as string, (m3[2] as string).length, "/")
+            fileContent = fileContent.replaceAll(m3[2] as string, newImgTag);
+        }
+
+        return fileContent;
+    }
 
     // function deleteAllFilesInDir(dirPath : string, extension : string) {
     //     try {
