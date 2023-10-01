@@ -146,7 +146,7 @@ export default async function pluginGitLabContent(
 
 
                         //let markdown = turndownService.turndown(response.data);
-                        let markdown = purify.sanitize(response.data,  {FORBID_TAGS: ['ins'], USE_PROFILES: {html: true, svg: true, svgFilters: true}});
+                        let markdown = purify.sanitize(response.data,  {FORBID_TAGS: ['ins'], USE_PROFILES: {html: false, svg: true, svgFilters: true}});
 
                         if (rewriteImages) {
                             markdown = rewriteImagesURLs(markdown, project);
