@@ -146,7 +146,7 @@ export default async function pluginGitLabContent(
 
 
                         //let markdown = turndownService.turndown(response.data);
-                        let markdown = purify.sanitize(response.data,  {FORBID_TAGS: ['ins'], USE_PROFILES: {html: false, svg: true, svgFilters: true}});
+                        let markdown = purify.sanitize(response.data,  {FORBID_TAGS: ['ins', 'a'], USE_PROFILES: {html: false, svg: true, svgFilters: true}});
 
                         if (rewriteImages) {
                             markdown = rewriteImagesURLs(markdown, project);
@@ -208,6 +208,7 @@ export default async function pluginGitLabContent(
             fileContent = fileContent.replaceAll(m2[2] as string, "");
         }
 
+        //fix img unclosed tags
         while ( m3 = imgRex.exec( fileContent ) ) {
             let newImgTag = stringInsert(m3[2] as string, (m3[2] as string).length, "/")
             fileContent = fileContent.replaceAll(m3[2] as string, newImgTag);
