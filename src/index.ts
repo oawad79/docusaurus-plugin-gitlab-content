@@ -2,7 +2,7 @@ import type { LoadContext, Plugin } from "@docusaurus/types"
 import axios from "axios"
 import { existsSync, writeFileSync, mkdirSync } from "fs"
 
-import { timeIt } from "./utils"
+import {getUnclosedTags, timeIt} from "./utils"
 import {GitLabContentPluginOptions} from "./types"
 import path from "path";
 // import fs from "fs";
@@ -131,6 +131,11 @@ export default async function pluginGitLabContent(
                                 replaceTextWithAnother.forEach(value => {
                                     rewrittenData = rewrittenData.replaceAll(value.replace, value.replaceWith);
                                 });
+                            }
+
+                            let unclosedTags = getUnclosedTags(rewrittenData);
+                            for (let tag of unclosedTags) {
+                                rewrittenData = rewrittenData.replaceAll(tag, "");
                             }
 
                             // if (escapeTags) {
