@@ -2,9 +2,11 @@ import type { LoadContext, Plugin } from "@docusaurus/types"
 import axios from "axios"
 import { existsSync, writeFileSync, mkdirSync } from "fs"
 
-import {getUnclosedTags, timeIt} from "./utils"
+import {timeIt} from "./utils"
 import {GitLabContentPluginOptions} from "./types"
 import path from "path";
+import TurndownService from "turndown";
+
 // import fs from "fs";
 // import path from "path";
 
@@ -45,6 +47,9 @@ export default async function pluginGitLabContent(
             "The sourceBaseUrl field is undefined, so I don't know where to fetch from!"
         )
     }
+
+    let turndownService = new TurndownService()
+
 
     async function fetchGitLabContent() {
         console.log("Entering fetchGitLabContent")
@@ -105,14 +110,14 @@ export default async function pluginGitLabContent(
     //     return str.replace(/[<>]/g, replaceTag);
     // }
 
-    function stringInsert(text : string, index : number, toInsert: string) {
-        if (index > 0)
-        {
-            return text.substring(0, index) + toInsert + text.substring(index, text.length);
-        }
-
-        return toInsert + text;
-    }
+    // function stringInsert(text : string, index : number, toInsert: string) {
+    //     if (index > 0)
+    //     {
+    //         return text.substring(0, index) + toInsert + text.substring(index, text.length);
+    //     }
+    //
+    //     return toInsert + text;
+    // }
 
     function fetchContent(projects: any) {
         let promises = [];
@@ -133,29 +138,32 @@ export default async function pluginGitLabContent(
                             mkdirSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}`, {recursive: true});
                         }
 
-                        if (rewriteImages) {
-                            let rewrittenData: string = rewriteImagesURLs(response.data, project);
 
+                        let markdown = turndownService.turndown(response.data);
+
+                        if (rewriteImages) {
+                            // markdown = rewriteImagesURLs(markdown, project);
+                            //
                             if (replaceTextWithAnother) {
                                 replaceTextWithAnother.forEach(value => {
-                                    rewrittenData = rewrittenData.replaceAll(value.replace, value.replaceWith);
+                                    markdown = markdown.replaceAll(value.replace, value.replaceWith);
                                 });
                             }
 
-                            let unclosedTags = getUnclosedTags(rewrittenData);
-                            for (let tag of unclosedTags) {
-                                rewrittenData = rewrittenData.replaceAll(tag, "");
-                                let closingTag = stringInsert(tag, 1, "/");
-                                rewrittenData = rewrittenData.replaceAll(closingTag, "");
-                            }
-
-                            // if (escapeTags) {
-                            //     rewrittenData = safeTagsReplace(rewrittenData);
+                            // let unclosedTags = getUnclosedTags(markdown);
+                            // for (let tag of unclosedTags) {
+                            //     markdown = markdown.replaceAll(tag, "");
+                            //     let closingTag = stringInsert(tag, 1, "/");
+                            //     markdown = markdown.replaceAll(closingTag, "");
                             // }
+                            //
+                            // // if (escapeTags) {
+                            // //     rewrittenData = safeTagsReplace(rewrittenData);
+                            // // }
 
-                            writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.md`, rewrittenData);
+                            writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.md`, markdown);
                         } else {
-                            writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.md`, response.data);
+                            writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.md`, markdown);
                         }
                     }).catch(
                         reason => {
@@ -174,32 +182,32 @@ export default async function pluginGitLabContent(
         Promise.all(promises);
     }
 
-    function rewriteImagesURLs(fileContent: string, project: any) : string {
-        let m : RegExpExecArray | null,
-            m2 : RegExpExecArray | null,
-            m3 : RegExpExecArray | null,
-            rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|pdf|JPG|PNG|GIF|JPEG|SVG|PDF)).*\)/gm,
-            removeRex = /\[([^\[]+)?\]\(\)/gm,
-            imgRex = /(<img("[^"]*"|[^>])+)(?<!\/)>/gm;
-
-        while ( m = rex.exec( fileContent ) ) {
-            let rewrittenURL = `${sourceBaseUrl}/${project.path_with_namespace}/-/raw/${project.default_branch}/${m[2]}`
-            //console.log('rewrittenURL = ', rewrittenURL);
-            fileContent = fileContent.replaceAll(m[2] as string, rewrittenURL);
-        }
-
-        //remove all empty ones like [blah](empty)
-        while ( m2 = removeRex.exec( fileContent ) ) {
-            fileContent = fileContent.replaceAll(m2[2] as string, "");
-        }
-
-        while ( m3 = imgRex.exec( fileContent ) ) {
-            let newImgTag = stringInsert(m3[2] as string, (m3[2] as string).length, "/")
-            fileContent = fileContent.replaceAll(m3[2] as string, newImgTag);
-        }
-
-        return fileContent;
-    }
+    // function rewriteImagesURLs(fileContent: string, project: any) : string {
+    //     let m : RegExpExecArray | null,
+    //         m2 : RegExpExecArray | null,
+    //         m3 : RegExpExecArray | null,
+    //         rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|pdf|JPG|PNG|GIF|JPEG|SVG|PDF)).*\)/gm,
+    //         removeRex = /\[([^\[]+)?\]\(\)/gm,
+    //         imgRex = /(<img("[^"]*"|[^>])+)(?<!\/)>/gm;
+    //
+    //     while ( m = rex.exec( fileContent ) ) {
+    //         let rewrittenURL = `${sourceBaseUrl}/${project.path_with_namespace}/-/raw/${project.default_branch}/${m[2]}`
+    //         //console.log('rewrittenURL = ', rewrittenURL);
+    //         fileContent = fileContent.replaceAll(m[2] as string, rewrittenURL);
+    //     }
+    //
+    //     //remove all empty ones like [blah](empty)
+    //     while ( m2 = removeRex.exec( fileContent ) ) {
+    //         fileContent = fileContent.replaceAll(m2[2] as string, "");
+    //     }
+    //
+    //     while ( m3 = imgRex.exec( fileContent ) ) {
+    //         let newImgTag = stringInsert(m3[2] as string, (m3[2] as string).length, "/")
+    //         fileContent = fileContent.replaceAll(m3[2] as string, newImgTag);
+    //     }
+    //
+    //     return fileContent;
+    // }
 
     // function deleteAllFilesInDir(dirPath : string, extension : string) {
     //     try {
