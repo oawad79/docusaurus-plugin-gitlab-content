@@ -90,20 +90,20 @@ export default async function pluginGitLabContent(
         } while (currentPage <= totalPages);
     }
 
-    let tagsToReplace = {
-        // '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;'
-    };
-
-    function replaceTag(tag : string) {
-        // @ts-ignore
-        return tagsToReplace[tag] || tag;
-    }
-
-    function safeTagsReplace(str : string) {
-        return str.replace(/[<>]/g, replaceTag);
-    }
+    // let tagsToReplace = {
+    //     // '&': '&amp;',
+    //     '<': '&lt;',
+    //     '>': '&gt;'
+    // };
+    //
+    // function replaceTag(tag : string) {
+    //     // @ts-ignore
+    //     return tagsToReplace[tag] || tag;
+    // }
+    //
+    // function safeTagsReplace(str : string) {
+    //     return str.replace(/[<>]/g, replaceTag);
+    // }
 
     function fetchContent(projects: any) {
         let promises = [];
