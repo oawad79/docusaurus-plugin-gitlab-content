@@ -21,7 +21,7 @@ export default async function pluginGitLabContent(
         requestConfig = {},
         rewriteImages  = true,
         replaceTextWithAnother,
-        escapeTags,
+        //escapeTags,
         excludeGroups
     } = options
 
