@@ -55,47 +55,42 @@ export default async function pluginGitLabContent(
 
         let groups : any[] = response.data;
 
-        //let promises = [];
+        let promises = [];
 
         for (let group of groups) {
             if (!excludeGroups || !excludeGroups?.includes(group.name)) {
-                if (!existsSync(`${context.siteDir}/${outDir}/${group.path}`)) {
-                    mkdirSync(`${context.siteDir}/${outDir}/${group.path}`, {recursive: true});
-                }
-
-                let currentPage = 1;
-                let totalPages = 1;
-                do {
-                    console.log(`${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=100&page=${currentPage}&include_subgroups=true`);
-                    //promises.push(
-                    let response = await axios.get(
-                            `${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=100&page=${currentPage}&include_subgroups=true`,
-                            requestConfig
-                        );
-
-                    totalPages = response.headers['x-total-pages'];
-                    console.log(`${group} Total pages = `, totalPages);
-                    fetchContent(response.data);
-                    //     }).catch(error => {
-                    //             console.log("*********************************** Downloading Group *********************************************")
-                    //             console.log(`Location = ${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=200&include_subgroups=true`)
-                    //             console.log("Error: ", error)
-                    //             console.log("********************************************************************************")
-                    //
-                    //         }
-                    //     )
-                    // //);
-
-                    currentPage++;
-                } while (currentPage <= totalPages);
+                promises.push(fetchGroupData(group));
             }
         }
 
-        //Promise.all(promises);
+        await Promise.all(promises);
+    }
+
+    async function fetchGroupData(group: any) {
+        if (!existsSync(`${context.siteDir}/${outDir}/${group.path}`)) {
+            mkdirSync(`${context.siteDir}/${outDir}/${group.path}`, {recursive: true});
+        }
+
+        let currentPage = 1;
+        let totalPages = 1;
+        do {
+            console.log(`${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=100&page=${currentPage}&include_subgroups=true`);
+            //promises.push(
+            let response = await axios.get(
+                `${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=100&page=${currentPage}&include_subgroups=true`,
+                requestConfig
+            );
+
+            totalPages = response.headers['x-total-pages'];
+            console.log(`${group} Total pages = `, totalPages);
+            fetchContent(response.data);
+
+            currentPage++;
+        } while (currentPage <= totalPages);
     }
 
     let tagsToReplace = {
-        '&': '&amp;',
+        // '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;'
     };
@@ -164,12 +159,18 @@ export default async function pluginGitLabContent(
 
     function rewriteImagesURLs(fileContent: string, project: any) : string {
         let m : RegExpExecArray | null,
-            rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|JPG|PNG|GIF|JPEG|SVG)).*\)/gm;
+            rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|JPG|PNG|GIF|JPEG|SVG)).*\)/gm,
+            removeRex = /\[([^\[]+)?\]\(\)/gm;
 
         while ( m = rex.exec( fileContent ) ) {
             let rewrittenURL = `${sourceBaseUrl}/${project.path_with_namespace}/-/raw/${project.default_branch}/${m[2]}`
             //console.log('rewrittenURL = ', rewrittenURL);
             fileContent = fileContent.replaceAll(m[2] as string, rewrittenURL);
+        }
+
+        //remove all empty ones like [blah](empty)
+        while ( m = removeRex.exec( fileContent ) ) {
+            fileContent = fileContent.replaceAll(m[2] as string, "");
         }
 
         return fileContent;
