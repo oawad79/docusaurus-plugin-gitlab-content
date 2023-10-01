@@ -57,7 +57,6 @@ export default async function pluginGitLabContent(
 
         //let promises = [];
 
-        //groups.forEach(group => {
         for (let group of groups) {
             if (!excludeGroups || !excludeGroups?.includes(group.name)) {
                 if (!existsSync(`${context.siteDir}/${outDir}/${group.path}`)) {
@@ -165,7 +164,7 @@ export default async function pluginGitLabContent(
 
     function rewriteImagesURLs(fileContent: string, project: any) : string {
         let m : RegExpExecArray | null,
-            rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|JPG|PNG|GIF|JPEG|SVG))\)/gm;
+            rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|JPG|PNG|GIF|JPEG|SVG)).*\)/gm;
 
         while ( m = rex.exec( fileContent ) ) {
             let rewrittenURL = `${sourceBaseUrl}/${project.path_with_namespace}/-/raw/${project.default_branch}/${m[2]}`
