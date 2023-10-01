@@ -137,9 +137,9 @@ export default async function pluginGitLabContent(
                             //     rewrittenData = safeTagsReplace(rewrittenData);
                             // }
 
-                            writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, rewrittenData);
+                            writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.md`, rewrittenData);
                         } else {
-                            writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, response.data);
+                            writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.md`, response.data);
                         }
                     }).catch(
                         reason => {
