@@ -1,6 +1,6 @@
 {
     "name": "docusaurus-plugin-gitlab2-content",
-    "version": "1.0.83",
+    "version": "1.0.84",
     "description": "A Docusaurus v2 plugin that allows you to fetch content from GitLab!",
     "main": "build/index.js",
     "author": "Osama Awad",
