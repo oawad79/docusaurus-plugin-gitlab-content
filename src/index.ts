@@ -59,6 +59,7 @@ export default async function pluginGitLabContent(
 
         for (let group of groups) {
             if (!excludeGroups || !excludeGroups?.includes(group.name)) {
+                console.log("Processing group = ", group.name);
                 promises.push(fetchGroupData(group));
             }
         }
