@@ -133,9 +133,9 @@ export default async function pluginGitLabContent(
                                 });
                             }
 
-                            if (escapeTags) {
-                                rewrittenData = safeTagsReplace(rewrittenData);
-                            }
+                            // if (escapeTags) {
+                            //     rewrittenData = safeTagsReplace(rewrittenData);
+                            // }
 
                             writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.mdx`, rewrittenData);
                         } else {
