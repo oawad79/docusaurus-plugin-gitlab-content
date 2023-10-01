@@ -105,14 +105,14 @@ export default async function pluginGitLabContent(
     //     return str.replace(/[<>]/g, replaceTag);
     // }
 
-    // function stringInsert(text : string, index : number, toInsert: string) {
-    //     if (index > 0)
-    //     {
-    //         return text.substring(0, index) + toInsert + text.substring(index, text.length);
-    //     }
-    //
-    //     return toInsert + text;
-    // }
+    function stringInsert(text : string, index : number, toInsert: string) {
+        if (index > 0)
+        {
+            return text.substring(0, index) + toInsert + text.substring(index, text.length);
+        }
+
+        return toInsert + text;
+    }
 
     function fetchContent(projects: any) {
         let promises = [];
@@ -145,7 +145,8 @@ export default async function pluginGitLabContent(
                             let unclosedTags = getUnclosedTags(rewrittenData);
                             for (let tag of unclosedTags) {
                                 rewrittenData = rewrittenData.replaceAll(tag, "");
-                                rewrittenData = rewrittenData.replaceAll("</ins>", "");
+                                let closingTag = stringInsert(tag, 1, "/");
+                                rewrittenData = rewrittenData.replaceAll(closingTag, "");
                             }
 
                             // if (escapeTags) {
