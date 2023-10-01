@@ -5,7 +5,13 @@ import { existsSync, writeFileSync, mkdirSync } from "fs"
 import {timeIt} from "./utils"
 import {GitLabContentPluginOptions} from "./types"
 import path from "path";
-import TurndownService from "turndown";
+
+import { JSDOM } from 'jsdom';
+import DOMPurify from 'dompurify';
+
+const window = new JSDOM('').window;
+const purify = DOMPurify(window);
+
 
 // import fs from "fs";
 // import path from "path";
@@ -48,7 +54,7 @@ export default async function pluginGitLabContent(
         )
     }
 
-    let turndownService = new TurndownService()
+
 
 
     async function fetchGitLabContent() {
@@ -139,7 +145,8 @@ export default async function pluginGitLabContent(
                         }
 
 
-                        let markdown = turndownService.turndown(response.data);
+                        //let markdown = turndownService.turndown(response.data);
+                        let markdown = purify.sanitize(response.data,  {USE_PROFILES: {html: true, svg: true, svgFilters: true}});
 
                         if (rewriteImages) {
                             markdown = rewriteImagesURLs(markdown, project);
