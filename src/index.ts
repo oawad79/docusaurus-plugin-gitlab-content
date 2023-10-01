@@ -159,7 +159,8 @@ export default async function pluginGitLabContent(
 
     function rewriteImagesURLs(fileContent: string, project: any) : string {
         let m : RegExpExecArray | null,
-            rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|JPG|PNG|GIF|JPEG|SVG)).*\)/gm,
+            m2 : RegExpExecArray | null,
+            rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|pdf|md|JPG|PNG|GIF|JPEG|SVG|PDF|MD)).*\)/gm,
             removeRex = /\[([^\[]+)?\]\(\)/gm;
 
         while ( m = rex.exec( fileContent ) ) {
@@ -169,8 +170,8 @@ export default async function pluginGitLabContent(
         }
 
         //remove all empty ones like [blah](empty)
-        while ( m = removeRex.exec( fileContent ) ) {
-            fileContent = fileContent.replaceAll(m[2] as string, "");
+        while ( m2 = removeRex.exec( fileContent ) ) {
+            fileContent = fileContent.replaceAll(m2[2] as string, "");
         }
 
         return fileContent;
