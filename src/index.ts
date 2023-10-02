@@ -199,8 +199,8 @@ export default async function pluginGitLabContent(
 
             let diagram = m[0];
             console.log("m[2] = ", m[0])
-            diagram = diagram?.replace("/&gt;/gm", ">");
-            diagram = diagram?.replace("/&lt;/gm", "<");
+            diagram = diagram?.replaceAll("-&gt;&gt;", "->>");
+            //diagram = diagram?.replaceAll("-&lt;&lt;", "<-");
 
             markdown = markdown.replace(m[0], diagram? diagram : "");
         }
