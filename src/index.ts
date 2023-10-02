@@ -196,19 +196,13 @@ export default async function pluginGitLabContent(
             kroki = /```kroki(\r?\n?([\s\S]*?))```/g;
 
         while (  (m = kroki.exec(markdown))  ) {
-            let diagram = m[0];
-            diagram = diagram.replaceAll("&gt;", ">");
-            diagram = diagram.replaceAll("&lt;", "<");
+            let diagram = m[2];
+            diagram = diagram?.replaceAll("&gt;", ">");
+            diagram = diagram?.replaceAll("&lt;", "<");
 
-            if (markdown.startsWith("# Brazil Taxes")) {
-                console.log("m[0] = ", m[0])
-            }
+            markdown = markdown.replace(m[0], diagram? diagram : "");
 
-            markdown = markdown.replace(m[0], diagram);
 
-            if (markdown.startsWith("# Brazil Taxes")) {
-                console.log("Rewritten Diagram = ", markdown)
-            }
         }
 
         console.log("Rewritten Diagram = ", markdown)
