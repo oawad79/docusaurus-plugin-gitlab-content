@@ -145,7 +145,6 @@ export default async function pluginGitLabContent(
                         }
 
 
-                        //let markdown = turndownService.turndown(response.data);
                         let markdown = purify.sanitize(response.data,  {FORBID_TAGS: ['ins', 'a'], USE_PROFILES: {html: false, svg: true, svgFilters: true}});
 
                         if (rewriteImages) {
@@ -168,6 +167,8 @@ export default async function pluginGitLabContent(
                             // //     rewrittenData = safeTagsReplace(rewrittenData);
                             // // }
 
+                            markdown = rewriteDiagrams(markdown);
+
                             writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.md`, markdown);
                         } else {
                             writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.md`, markdown);
@@ -188,6 +189,21 @@ export default async function pluginGitLabContent(
 
         Promise.all(promises);
     }
+
+    function rewriteDiagrams(markdown : string) {
+        let m,
+            kroki = /```kroki(\r?\n?([\s\S]*?))```/g;
+
+        while (  (m = kroki.exec(markdown))  ) {
+            let diagram = m[0];
+            diagram = diagram.replaceAll("&gt;", ">");
+            diagram = diagram.replaceAll("&lt;", "<");
+            markdown = markdown.replace(m[0], diagram);
+        }
+
+        return markdown;
+    }
+
 
     function rewriteImagesURLs(fileContent: string, project: any) : string {
         let m : RegExpExecArray | null,
