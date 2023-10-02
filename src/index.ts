@@ -197,8 +197,8 @@ export default async function pluginGitLabContent(
 
         while (  (m = kroki.exec(markdown))  ) {
 
-            let diagram = m[2];
-            console.log("m[2] = ", m[2])
+            let diagram = m[0];
+            console.log("m[2] = ", m[0])
             diagram = diagram?.replace("/&gt;/gm", ">");
             diagram = diagram?.replace("/&lt;/gm", "<");
 
