@@ -169,6 +169,7 @@ export default async function pluginGitLabContent(
 
                             markdown = rewriteDiagrams(markdown);
 
+
                             writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.md`, markdown);
                         } else {
                             writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.md`, markdown);
@@ -198,7 +199,11 @@ export default async function pluginGitLabContent(
             let diagram = m[0];
             diagram = diagram.replaceAll("&gt;", ">");
             diagram = diagram.replaceAll("&lt;", "<");
+
+            console.log("diagram = ", diagram)
+
             markdown = markdown.replace(m[0], diagram);
+            console.log("Rewritten Diagram = ", markdown)
         }
 
         return markdown;
