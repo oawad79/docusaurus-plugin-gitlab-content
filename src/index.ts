@@ -209,7 +209,7 @@ export default async function pluginGitLabContent(
         let m : RegExpExecArray | null,
             m2 : RegExpExecArray | null,
             m3 : RegExpExecArray | null,
-            rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|pdf|JPG|PNG|GIF|JPEG|SVG|PDF)).*\)/gm,
+            rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|pdf|md|JPG|PNG|GIF|JPEG|SVG|PDF|MD)).*\)/gm,
             removeRex = /\[([^\[]+)?\]\(\)/gm,
             imgRex = /(<img("[^"]*"|[^>])+)(?<!\/)>/gm;
 
