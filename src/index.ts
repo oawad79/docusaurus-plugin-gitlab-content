@@ -167,7 +167,7 @@ export default async function pluginGitLabContent(
                             // //     rewrittenData = safeTagsReplace(rewrittenData);
                             // // }
 
-                            markdown = rewriteDiagrams(markdown);
+                            //markdown = rewriteDiagrams(markdown);
 
 
                             writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.md`, markdown);
@@ -191,23 +191,23 @@ export default async function pluginGitLabContent(
         Promise.all(promises);
     }
 
-    function rewriteDiagrams(markdown : string) {
-        let m,
-            kroki = /```kroki(\r?\n?([\s\S]*?))```/g;
-
-        while (  (m = kroki.exec(markdown))  ) {
-
-            let diagram = m[2];
-            diagram = diagram?.replace("/^-{1,2}&gt;/g", "->");
-            diagram = diagram?.replace("/^&lt;-{1,2}/g", "<-");
-
-            markdown = markdown.replace(m[0], diagram? diagram : "");
-        }
-
-        console.log("Rewritten Diagram = ", markdown)
-
-        return markdown;
-    }
+    // function rewriteDiagrams(markdown : string) {
+    //     let m,
+    //         kroki = /```kroki(\r?\n?([\s\S]*?))```/g;
+    //
+    //     while (  (m = kroki.exec(markdown))  ) {
+    //
+    //         let diagram = m[2];
+    //         diagram = diagram?.replace("/^-{1,2}&gt;/g", "->");
+    //         diagram = diagram?.replace("/^&lt;-{1,2}/g", "<-");
+    //
+    //         markdown = markdown.replace(m[0], diagram? diagram : "");
+    //     }
+    //
+    //     console.log("Rewritten Diagram = ", markdown)
+    //
+    //     return markdown;
+    // }
 
 
     function rewriteImagesURLs(fileContent: string, project: any) : string {
