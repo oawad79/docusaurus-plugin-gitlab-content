@@ -221,7 +221,7 @@ export default async function pluginGitLabContent(
 
         //remove all empty ones like [blah](empty)
         while ( m2 = removeRex.exec( fileContent ) ) {
-            fileContent = fileContent.replaceAll(m2[2] as string, "");
+            fileContent = fileContent.replaceAll(m2[0] as string, "");
         }
 
         //fix img unclosed tags
