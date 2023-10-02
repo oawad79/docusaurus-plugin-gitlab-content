@@ -196,13 +196,12 @@ export default async function pluginGitLabContent(
             kroki = /```kroki(\r?\n?([\s\S]*?))```/g;
 
         while (  (m = kroki.exec(markdown))  ) {
+
             let diagram = m[2];
-            diagram = diagram?.replaceAll("&gt;", ">");
-            diagram = diagram?.replaceAll("&lt;", "<");
+            diagram = diagram?.replace("/^-{1,2}&gt;/g", "->");
+            diagram = diagram?.replace("/^&lt;-{1,2}/g", "<-");
 
             markdown = markdown.replace(m[0], diagram? diagram : "");
-
-
         }
 
         console.log("Rewritten Diagram = ", markdown)
