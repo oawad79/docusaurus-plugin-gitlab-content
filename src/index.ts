@@ -200,11 +200,18 @@ export default async function pluginGitLabContent(
             diagram = diagram.replaceAll("&gt;", ">");
             diagram = diagram.replaceAll("&lt;", "<");
 
-            console.log("diagram = ", diagram)
+            if (markdown.startsWith("# Brazil Taxes")) {
+                console.log("m[0] = ", m[0])
+            }
 
             markdown = markdown.replace(m[0], diagram);
-            console.log("Rewritten Diagram = ", markdown)
+
+            if (markdown.startsWith("# Brazil Taxes")) {
+                console.log("Rewritten Diagram = ", markdown)
+            }
         }
+
+        console.log("Rewritten Diagram = ", markdown)
 
         return markdown;
     }
