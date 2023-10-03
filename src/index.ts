@@ -253,8 +253,7 @@ export default async function pluginGitLabContent(
             m4 : RegExpExecArray | null,
             rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|pdf|JPG|PNG|GIF|JPEG|SVG|PDF)).*\)/gm,
             removeRex = /\[([^\[]+)?\]\(\)/gm,
-            imgRex = /(<img("[^"]*"|[^>])+)(?<!\/)>/gm,
-            removeMDInternal = /\[([^\[]+)\]\(?(.*\.(md|MD)).*\)?/gm;
+            imgRex = /(<img("[^"]*"|[^>])+)(?<!\/)>/gm;
 
         while ( m = rex.exec( fileContent ) ) {
             let rewrittenURL = `${sourceBaseUrl}/${project.path_with_namespace}/-/raw/${project.default_branch}/${m[2]}`
@@ -268,9 +267,9 @@ export default async function pluginGitLabContent(
         }
 
 
-        while ( m4 = removeMDInternal.exec( fileContent ) ) {
-            fileContent = fileContent.replaceAll(m4[0] as string, "");
-        }
+        // while ( m4 = removeMDInternal.exec( fileContent ) ) {
+        //     fileContent = fileContent.replaceAll(m4[0] as string, "");
+        // }
 
         //fix img unclosed tags
         while ( m3 = imgRex.exec( fileContent ) ) {
