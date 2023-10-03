@@ -179,8 +179,8 @@ export default async function pluginGitLabContent(
                         }
 
 
-                        let markdown = purify.sanitize(response.data,  {FORBID_TAGS: ['ins', 'a'], USE_PROFILES: {html: false, svg: true, svgFilters: true}});
-
+                        //let markdown = purify.sanitize(response.data,  {FORBID_TAGS: ['ins', 'a'], USE_PROFILES: {html: false, svg: true, svgFilters: true}});
+                        let markdown = response.data;
                         if (rewriteImages) {
                             markdown = rewriteImagesURLs(markdown, project);
                             //
@@ -203,7 +203,7 @@ export default async function pluginGitLabContent(
                             // //     rewrittenData = safeTagsReplace(rewrittenData);
                             // // }
 
-                            markdown = rewriteDiagrams(markdown);
+                           // markdown = rewriteDiagrams(markdown);
 
 
                             writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${project.name.trim()}.md`, markdown);
@@ -227,33 +227,33 @@ export default async function pluginGitLabContent(
         Promise.all(promises);
     }
 
-    function rewriteDiagrams(markdown : string) {
-        let m,
-            kroki = /```kroki(\r?\n?([\s\S]*?))```/gm;
-
-        while (  (m = kroki.exec(markdown))  ) {
-
-            let diagram = m[0];
-            let original = m[0] as string;
-
-            diagram = diagram?.replaceAll("-&gt;&gt;", "->>");
-            //diagram = diagram?.replaceAll("-&lt;&lt;", "<-");
-
-            markdown = markdown.replaceAll(original, diagram? diagram : "");
-        }
-
-        return markdown;
-    }
+    // function rewriteDiagrams(markdown : string) {
+    //     let m,
+    //         kroki = /```kroki(\r?\n?([\s\S]*?))```/gm;
+    //
+    //     while (  (m = kroki.exec(markdown))  ) {
+    //
+    //         let diagram = m[0];
+    //         let original = m[0] as string;
+    //
+    //         diagram = diagram?.replaceAll("-&gt;&gt;", "->>");
+    //         //diagram = diagram?.replaceAll("-&lt;&lt;", "<-");
+    //
+    //         markdown = markdown.replaceAll(original, diagram? diagram : "");
+    //     }
+    //
+    //     return markdown;
+    // }
 
 
     function rewriteImagesURLs(fileContent: string, project: any) : string {
         let m : RegExpExecArray | null,
-            m2 : RegExpExecArray | null,
-            m3 : RegExpExecArray | null,
+            //m2 : RegExpExecArray | null,
+            //m3 : RegExpExecArray | null,
 
-            rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|pdf|JPG|PNG|GIF|JPEG|SVG|PDF)).*\)/gm,
-            removeRex = /\[([^\[]+)?\]\(\)/gm,
-            imgRex = /(<img("[^"]*"|[^>])+)(?<!\/)>/gm;
+            rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|pdf|JPG|PNG|GIF|JPEG|SVG|PDF)).*\)/gm;
+            //removeRex = /\[([^\[]+)?\]\(\)/gm,
+            //imgRex = /(<img("[^"]*"|[^>])+)(?<!\/)>/gm;
 
         while ( m = rex.exec( fileContent ) ) {
             let rewrittenURL = `${sourceBaseUrl}/${project.path_with_namespace}/-/raw/${project.default_branch}/${m[2]}`
@@ -262,9 +262,9 @@ export default async function pluginGitLabContent(
         }
 
         //remove all empty ones like [blah](empty)
-        while ( m2 = removeRex.exec( fileContent ) ) {
-            fileContent = fileContent.replaceAll(m2[0] as string, "");
-        }
+        // while ( m2 = removeRex.exec( fileContent ) ) {
+        //     fileContent = fileContent.replaceAll(m2[0] as string, "");
+        // }
 
 
         // while ( m4 = removeMDInternal.exec( fileContent ) ) {
@@ -272,10 +272,10 @@ export default async function pluginGitLabContent(
         // }
 
         //fix img unclosed tags
-        while ( m3 = imgRex.exec( fileContent ) ) {
-            let newImgTag = stringInsert(m3[2] as string, (m3[2] as string).length, "/")
-            fileContent = fileContent.replaceAll(m3[2] as string, newImgTag);
-        }
+        // while ( m3 = imgRex.exec( fileContent ) ) {
+        //     let newImgTag = stringInsert(m3[2] as string, (m3[2] as string).length, "/")
+        //     fileContent = fileContent.replaceAll(m3[2] as string, newImgTag);
+        // }
 
         return fileContent;
     }
