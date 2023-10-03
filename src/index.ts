@@ -132,7 +132,7 @@ export default async function pluginGitLabContent(
         console.log("project.name = ", project.name);
         console.log("project.id = ", project.id);
         while ( m = rex.exec( markdown ) ) {
-            let markdownUrl = m[2];
+            //let markdownUrl = m[2];
 
             console.log("found = " , m[2]);
 
