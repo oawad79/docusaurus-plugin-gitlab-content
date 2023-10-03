@@ -127,36 +127,36 @@ export default async function pluginGitLabContent(
         return toInsert + text;
     }
 
-    function fetchInnerMarkdowns(markdown: string, project: any) {
-        let m : RegExpExecArray | null,
-            rex = /\[([^\[]+)\]\((.*\.(md|MD))\)/gm;
-        console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        console.log("project.name = ", project.name);
-        console.log("project.id = ", project.id);
-        while ( m = rex.exec( markdown ) ) {
-            //let markdownUrl = m[2];
-
-            console.log("found = " , m[2] as string);
-
-            console.log(`${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/${encodeURI(m[2] as string)}/raw`);
-
-            axios.get(
-                `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/${encodeURI(m[2] as string)}/raw`,
-                requestConfig
-            ).then(value => {
-                console.log(`Writing to file = ${context.siteDir}/${outDir}/${project.path_with_namespace}/${m? m[2] : ""}`)
-                writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${m? m[2] : ""}`, value.data);
-            }).catch(error => {
-                let x = error.code;
-                console.log(x);
-            })
-
-            //markdown = markdown.replaceAll(markdownUrl, `${sourceBaseUrl}`);
-        }
-        console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-
-        //return markdown;
-    }
+    // function fetchInnerMarkdowns(markdown: string, project: any) {
+    //     let m : RegExpExecArray | null,
+    //         rex = /\[([^\[]+)\]\((.*\.(md|MD))\)/gm;
+    //     console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    //     console.log("project.name = ", project.name);
+    //     console.log("project.id = ", project.id);
+    //     while ( m = rex.exec( markdown ) ) {
+    //         //let markdownUrl = m[2];
+    //
+    //         console.log("found = " , m[2] as string);
+    //
+    //         console.log(`${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/${encodeURI(m[2] as string)}/raw`);
+    //
+    //         axios.get(
+    //             `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/${encodeURI(m[2] as string)}/raw`,
+    //             requestConfig
+    //         ).then(value => {
+    //             console.log(`Writing to file = ${context.siteDir}/${outDir}/${project.path_with_namespace}/${m? m[2] : ""}`)
+    //             writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${m? m[2] : ""}`, value.data);
+    //         }).catch(error => {
+    //             let x = error.code;
+    //             console.log(x);
+    //         })
+    //
+    //         //markdown = markdown.replaceAll(markdownUrl, `${sourceBaseUrl}`);
+    //     }
+    //     console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    //
+    //     //return markdown;
+    // }
 
 
     function fetchContent(projects: any) {
@@ -190,7 +190,7 @@ export default async function pluginGitLabContent(
                                 });
                             }
 
-                            fetchInnerMarkdowns(markdown, project);
+                            //fetchInnerMarkdowns(markdown, project);
 
                             // let unclosedTags = getUnclosedTags(markdown);
                             // for (let tag of unclosedTags) {
@@ -250,14 +250,18 @@ export default async function pluginGitLabContent(
         let m : RegExpExecArray | null,
             m2 : RegExpExecArray | null,
             m3 : RegExpExecArray | null,
-            rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|pdf|JPG|PNG|GIF|JPEG|SVG|PDF)).*\)/gm,
+            rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|pdf|md|JPG|PNG|GIF|JPEG|SVG|PDF|MD)).*\)/gm,
             removeRex = /\[([^\[]+)?\]\(\)/gm,
             imgRex = /(<img("[^"]*"|[^>])+)(?<!\/)>/gm;
 
         while ( m = rex.exec( fileContent ) ) {
-            let rewrittenURL = `${sourceBaseUrl}/${project.path_with_namespace}/-/raw/${project.default_branch}/${m[2]}`
+            let f = m[2];
+            if (f.startsWith("./")) {
+                f = f.substring(2);
+            }
+            let rewrittenURL = `${sourceBaseUrl}/${project.path_with_namespace}/-/raw/${project.default_branch}/${f}`
             //console.log('rewrittenURL = ', rewrittenURL);
-            fileContent = fileContent.replaceAll(m[2] as string, rewrittenURL);
+            fileContent = fileContent.replaceAll(f as string, rewrittenURL);
         }
 
         //remove all empty ones like [blah](empty)
