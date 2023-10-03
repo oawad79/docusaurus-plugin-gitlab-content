@@ -125,6 +125,32 @@ export default async function pluginGitLabContent(
         return toInsert + text;
     }
 
+    function fetchInnerMarkdowns(markdown: string, project: any) {
+        let m,
+            rex = /\[([^\[]+)\]\((.*\.(md|MD))\)/gm;
+        console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        console.log("project.name = ", project.name);
+        console.log("project.id = ", project.id);
+        while ( m = rex.exec( markdown ) ) {
+            let markdownUrl = m[2];
+
+            console.log("found = " , m[2]);
+
+
+
+            // axios.get(
+            //     `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/${path.basename(project.readme_url)}/raw`,
+            //     requestConfig
+            // )
+
+            //markdown = markdown.replaceAll(markdownUrl, `${sourceBaseUrl}`);
+        }
+        console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
+        //return markdown;
+    }
+
+
     function fetchContent(projects: any) {
         let promises = [];
 
@@ -155,6 +181,8 @@ export default async function pluginGitLabContent(
                                     markdown = markdown.replaceAll(value.replace, value.replaceWith);
                                 });
                             }
+
+                            fetchInnerMarkdowns(markdown, project);
 
                             // let unclosedTags = getUnclosedTags(markdown);
                             // for (let tag of unclosedTags) {
@@ -214,7 +242,7 @@ export default async function pluginGitLabContent(
         let m : RegExpExecArray | null,
             m2 : RegExpExecArray | null,
             m3 : RegExpExecArray | null,
-            rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|pdf|md|JPG|PNG|GIF|JPEG|SVG|PDF|MD)).*\)/gm,
+            rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|pdf|JPG|PNG|GIF|JPEG|SVG|PDF)).*\)/gm,
             removeRex = /\[([^\[]+)?\]\(\)/gm,
             imgRex = /(<img("[^"]*"|[^>])+)(?<!\/)>/gm;
 
