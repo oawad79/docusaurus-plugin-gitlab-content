@@ -88,7 +88,7 @@ export default async function pluginGitLabContent(
         let currentPage = 1;
         let totalPages = 1;
         do {
-            console.log(`${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=100&page=${currentPage}&include_subgroups=true`);
+            //console.log(`${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=100&page=${currentPage}&include_subgroups=true`);
             //promises.push(
             let response = await axios.get(
                 `${sourceBaseUrl}/api/v4/groups/${group.id}/projects?per_page=100&page=${currentPage}&include_subgroups=true`,
@@ -96,7 +96,7 @@ export default async function pluginGitLabContent(
             );
 
             totalPages = response.headers['x-total-pages'];
-            console.log(`${group} Total pages = `, totalPages);
+            //console.log(`${group} Total pages = `, totalPages);
             fetchContent(response.data);
 
             currentPage++;
@@ -215,7 +215,7 @@ export default async function pluginGitLabContent(
                             if (reason.status !== 403) {
                                 console.log("*********************************** Downloading Project *********************************************")
                                 console.log(`Location = ${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/README${path.extname(project.readme_url)}/raw`)
-                                console.log("Error: ", reason)
+                                console.log("Error: ", reason.response.data)
                                 console.log("********************************************************************************")
                             }
                         })
@@ -250,7 +250,7 @@ export default async function pluginGitLabContent(
         let m : RegExpExecArray | null,
             m2 : RegExpExecArray | null,
             m3 : RegExpExecArray | null,
-            
+
             rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|pdf|JPG|PNG|GIF|JPEG|SVG|PDF)).*\)/gm,
             removeRex = /\[([^\[]+)?\]\(\)/gm,
             imgRex = /(<img("[^"]*"|[^>])+)(?<!\/)>/gm;
