@@ -8,8 +8,8 @@ import path from "path";
 
 import { JSDOM } from 'jsdom';
 import DOMPurify from 'dompurify';
-import { Simulate } from "react-dom/test-utils"
-import error = Simulate.error
+
+
 
 const window = new JSDOM('').window;
 const purify = DOMPurify(window);
@@ -128,7 +128,7 @@ export default async function pluginGitLabContent(
     }
 
     function fetchInnerMarkdowns(markdown: string, project: any) {
-        let m,
+        let m : RegExpExecArray | null,
             rex = /\[([^\[]+)\]\((.*\.(md|MD))\)/gm;
         console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         console.log("project.name = ", project.name);
@@ -136,18 +136,19 @@ export default async function pluginGitLabContent(
         while ( m = rex.exec( markdown ) ) {
             //let markdownUrl = m[2];
 
-            console.log("found = " , m[2]);
+            console.log("found = " , m[2] as string);
 
-            console.log(`${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/${encodeURI(m[2])}/raw`);
+            console.log(`${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/${encodeURI(m[2] as string)}/raw`);
 
             axios.get(
-                `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/${encodeURI(m[2])}/raw`,
+                `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/${encodeURI(m[2] as string)}/raw`,
                 requestConfig
             ).then(value => {
-                console.log(`Writing to file = ${context.siteDir}/${outDir}/${project.path_with_namespace}/${m[2]}`)
-                writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${m[2]}`, value.data);
+                console.log(`Writing to file = ${context.siteDir}/${outDir}/${project.path_with_namespace}/${m? m[2] : ""}`)
+                writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${m? m[2] : ""}`, value.data);
             }).catch(error => {
-                console.error(error)
+                let x = error.code;
+                console.log(x);
             })
 
             //markdown = markdown.replaceAll(markdownUrl, `${sourceBaseUrl}`);
