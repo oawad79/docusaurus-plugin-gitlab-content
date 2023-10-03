@@ -250,23 +250,26 @@ export default async function pluginGitLabContent(
         let m : RegExpExecArray | null,
             m2 : RegExpExecArray | null,
             m3 : RegExpExecArray | null,
-            rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|pdf|md|JPG|PNG|GIF|JPEG|SVG|PDF|MD)).*\)/gm,
+            m4 : RegExpExecArray | null,
+            rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|pdf|JPG|PNG|GIF|JPEG|SVG|PDF)).*\)/gm,
             removeRex = /\[([^\[]+)?\]\(\)/gm,
-            imgRex = /(<img("[^"]*"|[^>])+)(?<!\/)>/gm;
+            imgRex = /(<img("[^"]*"|[^>])+)(?<!\/)>/gm,
+            removeMDInternal = /\[([^\[]+)\]\((.*\.(md|MD))\)/gm;
 
         while ( m = rex.exec( fileContent ) ) {
-            let f = m[2];
-            if (f?.startsWith("./")) {
-                f = f?.substring(2);
-            }
-            let rewrittenURL = `${sourceBaseUrl}/${project.path_with_namespace}/-/raw/${project.default_branch}/${f? f : ""}`
+            let rewrittenURL = `${sourceBaseUrl}/${project.path_with_namespace}/-/raw/${project.default_branch}/${m[2]}`
             //console.log('rewrittenURL = ', rewrittenURL);
-            fileContent = fileContent.replaceAll(f as string, rewrittenURL);
+            fileContent = fileContent.replaceAll(m[2] as string, rewrittenURL);
         }
 
         //remove all empty ones like [blah](empty)
         while ( m2 = removeRex.exec( fileContent ) ) {
             fileContent = fileContent.replaceAll(m2[0] as string, "");
+        }
+
+        //remove all empty ones like [blah](empty)
+        while ( m4 = removeMDInternal.exec( fileContent ) ) {
+            fileContent = fileContent.replaceAll(m4[0] as string, "");
         }
 
         //fix img unclosed tags
