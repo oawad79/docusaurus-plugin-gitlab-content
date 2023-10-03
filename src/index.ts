@@ -6,13 +6,13 @@ import {timeIt} from "./utils"
 import {GitLabContentPluginOptions} from "./types"
 import path from "path";
 
-import { JSDOM } from 'jsdom';
-import DOMPurify from 'dompurify';
+//import { JSDOM } from 'jsdom';
+// import DOMPurify from 'dompurify';
 
 
-
-const window = new JSDOM('').window;
-const purify = DOMPurify(window);
+//
+// const window = new JSDOM('').window;
+// const purify = DOMPurify(window);
 
 
 // import fs from "fs";
@@ -118,14 +118,14 @@ export default async function pluginGitLabContent(
     //     return str.replace(/[<>]/g, replaceTag);
     // }
 
-    function stringInsert(text : string, index : number, toInsert: string) {
-        if (index > 0)
-        {
-            return text.substring(0, index) + toInsert + text.substring(index, text.length);
-        }
-
-        return toInsert + text;
-    }
+    // function stringInsert(text : string, index : number, toInsert: string) {
+    //     if (index > 0)
+    //     {
+    //         return text.substring(0, index) + toInsert + text.substring(index, text.length);
+    //     }
+    //
+    //     return toInsert + text;
+    // }
 
     // function fetchInnerMarkdowns(markdown: string, project: any) {
     //     let m : RegExpExecArray | null,
