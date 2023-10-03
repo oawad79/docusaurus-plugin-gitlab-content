@@ -254,7 +254,7 @@ export default async function pluginGitLabContent(
             rex = /\[([^\[]+)?\]\((.*\.(jpg|png|gif|jpeg|svg|pdf|JPG|PNG|GIF|JPEG|SVG|PDF)).*\)/gm,
             removeRex = /\[([^\[]+)?\]\(\)/gm,
             imgRex = /(<img("[^"]*"|[^>])+)(?<!\/)>/gm,
-            removeMDInternal = /\[([^\[]+)\]\((.*\.(md|MD))\)/gm;
+            removeMDInternal = /\[([^\[]+)\]\(?(.*\.(md|MD)).*\)?/gm;
 
         while ( m = rex.exec( fileContent ) ) {
             let rewrittenURL = `${sourceBaseUrl}/${project.path_with_namespace}/-/raw/${project.default_branch}/${m[2]}`
@@ -267,7 +267,7 @@ export default async function pluginGitLabContent(
             fileContent = fileContent.replaceAll(m2[0] as string, "");
         }
 
-        //remove all empty ones like [blah](empty)
+
         while ( m4 = removeMDInternal.exec( fileContent ) ) {
             fileContent = fileContent.replaceAll(m4[0] as string, "");
         }
