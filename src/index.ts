@@ -8,6 +8,8 @@ import path from "path";
 
 import { JSDOM } from 'jsdom';
 import DOMPurify from 'dompurify';
+import { Simulate } from "react-dom/test-utils"
+import error = Simulate.error
 
 const window = new JSDOM('').window;
 const purify = DOMPurify(window);
@@ -136,12 +138,17 @@ export default async function pluginGitLabContent(
 
             console.log("found = " , m[2]);
 
+            console.log(`${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/${encodeURI(m[2])}/raw`);
 
-
-            // axios.get(
-            //     `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/${path.basename(project.readme_url)}/raw`,
-            //     requestConfig
-            // )
+            axios.get(
+                `${sourceBaseUrl}/api/v4/projects/${project.id}/repository/files/${encodeURI(m[2])}/raw`,
+                requestConfig
+            ).then(value => {
+                console.log(`Writing to file = ${context.siteDir}/${outDir}/${project.path_with_namespace}/${m[2]}`)
+                writeFileSync(`${context.siteDir}/${outDir}/${project.path_with_namespace}/${m[2]}`, value.data);
+            }).catch(error => {
+                console.error(error)
+            })
 
             //markdown = markdown.replaceAll(markdownUrl, `${sourceBaseUrl}`);
         }
